@@ -35,6 +35,7 @@ int yyerror(char *s);
 %token _DIV
 %token _RELOP
 %token _LF
+%token _CHAR
 
 %%
 
@@ -90,11 +91,13 @@ statement
     :   assignment_statement
     |   if_statement
     |   return_statement
-    |   compound_statement
+    |   compound_statement 
     ;
 
 assignment_statement
     :   _ID _ASSIGN num_exp _SEMICOLON
+    |   _ID _ASSIGN _CHAR _SEMICOLON
+    |   _TYPE assignment_statement
     ;
 
 num_exp
@@ -113,7 +116,7 @@ exp
     :   constant
     |   _ID
     |   function_call
-    |   _LPAREN num_exp _RPAREN
+    |   _LPAREN exp _RPAREN /* @TODO: check if this works */
     ;
 
 constant
@@ -164,6 +167,7 @@ int main() {
 }
 
 int yyerror(char *s) {
-    fprintf(stderr, "%s\n", s);
+    extern int yylineno;
+    fprintf(stderr, "%s at line %d\n", s, yylineno);
     return 0;
 }

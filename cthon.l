@@ -3,9 +3,13 @@
 	extern YYSTYPE yylval;
 %}
 
+%option yylineno
+
 letter                      [_a-zA-Z]
+char                        [\x00-\x7F]
 digit                       [0-9]
 type                        int|double|char|float
+lf                          \r?\n
 
 %%
 
@@ -27,7 +31,8 @@ type                        int|double|char|float
 {letter}({letter}|{digit})* {   return _ID;       }
 
 {digit}{1,5}[uU]            {   return _UNSIGNED_NUMBER;   }
-[+-]?{digit}{1,5}           {   return _INT_NUMBER;        }
+[+-]?{digit}+               {   return _INT_NUMBER;        }
+'{char}'                    {   return _CHAR;       }
 
 "("                         {   return _LPAREN;     }
 ")"                         {   return _RPAREN;     }
@@ -46,7 +51,7 @@ type                        int|double|char|float
 ">="                        {   return _RELOP;      }
 "=="                        {   return _RELOP;      }
 "!="                        {   return _RELOP;      }
-\n                          {   return _LF;         }
+{lf}                        {            }
 
 %%
 
