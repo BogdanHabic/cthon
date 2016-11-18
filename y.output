@@ -1,214 +1,114 @@
+Terminals unused in grammar
+
+   _IF
+   _ELSE
+   _ELIF
+   _SWITCH
+   _CASE
+   _DEFAULT
+   _BREAK
+   _FOR
+   _WHILE
+   _DO
+   _RETURN
+   _INT_NUMBER
+   _UNSIGNED_NUMBER
+   _LPAREN
+   _RPAREN
+   _COMMA
+   _LBRACKET
+   _RBRACKET
+   _ASSIGN
+   _SEMICOLON
+   _PLUS
+   _MINUS
+   _TIMES
+   _DIV
+   _RELOP
+   _LF
+
+
 Grammar
 
-    0 $accept: lines $end
+    0 $accept: variable $end
 
-    1 lines: %empty
-    2      | lines NEWLINE
-    3      | lines expression NEWLINE
-
-    4 expression: expression PLUS expression
-    5           | expression MINUS expression
-    6           | expression MULTIPLY expression
-    7           | expression DIVIDE expression
-    8           | MINUS expression
-    9           | NUMBER
+    1 variable: _TYPE _ID
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-NUMBER (258) 9
-PLUS (259) 4
-MINUS (260) 5 8
-MULTIPLY (261) 6
-DIVIDE (262) 7
-NEWLINE (263) 2 3
-UMINUS (264)
+_TYPE (258) 1
+_IF (259)
+_ELSE (260)
+_ELIF (261)
+_SWITCH (262)
+_CASE (263)
+_DEFAULT (264)
+_BREAK (265)
+_FOR (266)
+_WHILE (267)
+_DO (268)
+_RETURN (269)
+_ID (270) 1
+_INT_NUMBER (271)
+_UNSIGNED_NUMBER (272)
+_LPAREN (273)
+_RPAREN (274)
+_COMMA (275)
+_LBRACKET (276)
+_RBRACKET (277)
+_ASSIGN (278)
+_SEMICOLON (279)
+_PLUS (280)
+_MINUS (281)
+_TIMES (282)
+_DIV (283)
+_RELOP (284)
+_LF (285)
 
 
 Nonterminals, with rules where they appear
 
-$accept (10)
+$accept (31)
     on left: 0
-lines (11)
-    on left: 1 2 3, on right: 0 2 3
-expression (12)
-    on left: 4 5 6 7 8 9, on right: 3 4 5 6 7 8
+variable (32)
+    on left: 1, on right: 0
 
 
 State 0
 
-    0 $accept: . lines $end
+    0 $accept: . variable $end
 
-    $default  reduce using rule 1 (lines)
+    _TYPE  shift, and go to state 1
 
-    lines  go to state 1
+    variable  go to state 2
 
 
 State 1
 
-    0 $accept: lines . $end
-    2 lines: lines . NEWLINE
-    3      | lines . expression NEWLINE
+    1 variable: _TYPE . _ID
 
-    $end     shift, and go to state 2
-    NUMBER   shift, and go to state 3
-    MINUS    shift, and go to state 4
-    NEWLINE  shift, and go to state 5
-
-    expression  go to state 6
+    _ID  shift, and go to state 3
 
 
 State 2
 
-    0 $accept: lines $end .
+    0 $accept: variable . $end
 
-    $default  accept
+    $end  shift, and go to state 4
 
 
 State 3
 
-    9 expression: NUMBER .
+    1 variable: _TYPE _ID .
 
-    $default  reduce using rule 9 (expression)
+    $default  reduce using rule 1 (variable)
 
 
 State 4
 
-    8 expression: MINUS . expression
+    0 $accept: variable $end .
 
-    NUMBER  shift, and go to state 3
-    MINUS   shift, and go to state 4
-
-    expression  go to state 7
-
-
-State 5
-
-    2 lines: lines NEWLINE .
-
-    $default  reduce using rule 2 (lines)
-
-
-State 6
-
-    3 lines: lines expression . NEWLINE
-    4 expression: expression . PLUS expression
-    5           | expression . MINUS expression
-    6           | expression . MULTIPLY expression
-    7           | expression . DIVIDE expression
-
-    PLUS      shift, and go to state 8
-    MINUS     shift, and go to state 9
-    MULTIPLY  shift, and go to state 10
-    DIVIDE    shift, and go to state 11
-    NEWLINE   shift, and go to state 12
-
-
-State 7
-
-    4 expression: expression . PLUS expression
-    5           | expression . MINUS expression
-    6           | expression . MULTIPLY expression
-    7           | expression . DIVIDE expression
-    8           | MINUS expression .
-
-    $default  reduce using rule 8 (expression)
-
-
-State 8
-
-    4 expression: expression PLUS . expression
-
-    NUMBER  shift, and go to state 3
-    MINUS   shift, and go to state 4
-
-    expression  go to state 13
-
-
-State 9
-
-    5 expression: expression MINUS . expression
-
-    NUMBER  shift, and go to state 3
-    MINUS   shift, and go to state 4
-
-    expression  go to state 14
-
-
-State 10
-
-    6 expression: expression MULTIPLY . expression
-
-    NUMBER  shift, and go to state 3
-    MINUS   shift, and go to state 4
-
-    expression  go to state 15
-
-
-State 11
-
-    7 expression: expression DIVIDE . expression
-
-    NUMBER  shift, and go to state 3
-    MINUS   shift, and go to state 4
-
-    expression  go to state 16
-
-
-State 12
-
-    3 lines: lines expression NEWLINE .
-
-    $default  reduce using rule 3 (lines)
-
-
-State 13
-
-    4 expression: expression . PLUS expression
-    4           | expression PLUS expression .
-    5           | expression . MINUS expression
-    6           | expression . MULTIPLY expression
-    7           | expression . DIVIDE expression
-
-    MULTIPLY  shift, and go to state 10
-    DIVIDE    shift, and go to state 11
-
-    $default  reduce using rule 4 (expression)
-
-
-State 14
-
-    4 expression: expression . PLUS expression
-    5           | expression . MINUS expression
-    5           | expression MINUS expression .
-    6           | expression . MULTIPLY expression
-    7           | expression . DIVIDE expression
-
-    MULTIPLY  shift, and go to state 10
-    DIVIDE    shift, and go to state 11
-
-    $default  reduce using rule 5 (expression)
-
-
-State 15
-
-    4 expression: expression . PLUS expression
-    5           | expression . MINUS expression
-    6           | expression . MULTIPLY expression
-    6           | expression MULTIPLY expression .
-    7           | expression . DIVIDE expression
-
-    $default  reduce using rule 6 (expression)
-
-
-State 16
-
-    4 expression: expression . PLUS expression
-    5           | expression . MINUS expression
-    6           | expression . MULTIPLY expression
-    7           | expression . DIVIDE expression
-    7           | expression DIVIDE expression .
-
-    $default  reduce using rule 7 (expression)
+    $default  accept

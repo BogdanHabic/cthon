@@ -1,6 +1,5 @@
-
-LEX_SRC = calc.l
-YACC_SRC = calc.y
+LEX_SRC = cthon.l
+YACC_SRC = cthon.y
 
 .PHONY: clean
 
@@ -19,5 +18,3 @@ clean:
 	rm -f y.tab.h
 	rm -f y.output
 	rm -f a.out
-
-

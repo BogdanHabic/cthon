@@ -45,23 +45,65 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NUMBER = 258,
-    PLUS = 259,
-    MINUS = 260,
-    MULTIPLY = 261,
-    DIVIDE = 262,
-    NEWLINE = 263,
-    UMINUS = 264
+    _TYPE = 258,
+    _IF = 259,
+    _ELSE = 260,
+    _ELIF = 261,
+    _SWITCH = 262,
+    _CASE = 263,
+    _DEFAULT = 264,
+    _BREAK = 265,
+    _FOR = 266,
+    _WHILE = 267,
+    _DO = 268,
+    _RETURN = 269,
+    _ID = 270,
+    _INT_NUMBER = 271,
+    _UNSIGNED_NUMBER = 272,
+    _LPAREN = 273,
+    _RPAREN = 274,
+    _COMMA = 275,
+    _LBRACKET = 276,
+    _RBRACKET = 277,
+    _ASSIGN = 278,
+    _SEMICOLON = 279,
+    _PLUS = 280,
+    _MINUS = 281,
+    _TIMES = 282,
+    _DIV = 283,
+    _RELOP = 284,
+    _LF = 285
   };
 #endif
 /* Tokens.  */
-#define NUMBER 258
-#define PLUS 259
-#define MINUS 260
-#define MULTIPLY 261
-#define DIVIDE 262
-#define NEWLINE 263
-#define UMINUS 264
+#define _TYPE 258
+#define _IF 259
+#define _ELSE 260
+#define _ELIF 261
+#define _SWITCH 262
+#define _CASE 263
+#define _DEFAULT 264
+#define _BREAK 265
+#define _FOR 266
+#define _WHILE 267
+#define _DO 268
+#define _RETURN 269
+#define _ID 270
+#define _INT_NUMBER 271
+#define _UNSIGNED_NUMBER 272
+#define _LPAREN 273
+#define _RPAREN 274
+#define _COMMA 275
+#define _LBRACKET 276
+#define _RBRACKET 277
+#define _ASSIGN 278
+#define _SEMICOLON 279
+#define _PLUS 280
+#define _MINUS 281
+#define _TIMES 282
+#define _DIV 283
+#define _RELOP 284
+#define _LF 285
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
