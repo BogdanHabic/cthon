@@ -1,3 +1,15 @@
 int main() {
-    int a = 's';
+    int a = 5;
+
+    int b;
+
+    char* b;
+    b = "asd";
+
+    char 
+        c
+        ;
+    c = '1';
+
+    return 2 * 3;
 }

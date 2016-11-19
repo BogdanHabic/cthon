@@ -20,8 +20,14 @@ int yyerror(char *s);
 %token _DO
 %token _RETURN
 %token _ID
+
 %token _INT_NUMBER
+%token _REAL_NUMBER
 %token _UNSIGNED_NUMBER
+
+%token _CHAR
+%token _STRING
+
 %token _LPAREN
 %token _RPAREN
 %token _COMMA
@@ -35,7 +41,6 @@ int yyerror(char *s);
 %token _DIV
 %token _RELOP
 %token _LF
-%token _CHAR
 
 %%
 
@@ -47,6 +52,7 @@ program
 
 variable_list
     :   variable _SEMICOLON
+    |   variable _ASSIGN exp _SEMICOLON
     |   variable_list variable _SEMICOLON
     ;
 
@@ -95,33 +101,35 @@ statement
     ;
 
 assignment_statement
-    :   _ID _ASSIGN num_exp _SEMICOLON
-    |   _ID _ASSIGN _CHAR _SEMICOLON
-    |   _TYPE assignment_statement
+    :   _ID _ASSIGN exp _SEMICOLON
     ;
 
-num_exp
-    :   mul_exp
-    |   num_exp _PLUS mul_exp
-    |   num_exp _MINUS mul_exp
+number
+    :   _INT_NUMBER
+    |   _UNSIGNED_NUMBER
+    |   _REAL_NUMBER
     ;
 
-mul_exp
-    :   exp
-    |   mul_exp _TIMES exp
-    |   mul_exp _DIV exp
+arithmetic_exp
+    :   /* empty */
+    |   arithmetic_exp _PLUS number
+    |   arithmetic_exp _MINUS number
+    |   arithmetic_exp _TIMES number
+    |   arithmetic_exp _DIV number
     ;
 
 exp
     :   constant
     |   _ID
+    |   arithmetic_exp
     |   function_call
     |   _LPAREN exp _RPAREN /* @TODO: check if this works */
     ;
 
 constant
-    :   _INT_NUMBER
-    |   _UNSIGNED_NUMBER
+    :   _CHAR
+    |   _STRING
+    |   number
     ;
 
 function_call
@@ -129,13 +137,8 @@ function_call
     ;
 
 arguments
-    :   /* empty */
-    |   argument_list
-    ;
-
-argument_list
-    :   num_exp
-    |   argument_list _COMMA num_exp
+    :   exp
+    |   arguments _COMMA exp
     ;
 
 if_statement
@@ -148,11 +151,11 @@ if_part
     ;
 
 rel_exp
-    :   num_exp _RELOP num_exp
+    :   exp _RELOP exp
     ;
 
 return_statement
-    :   _RETURN num_exp _SEMICOLON
+    :   _RETURN exp _SEMICOLON
     ;
 
 compound_statement

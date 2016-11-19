@@ -32,7 +32,10 @@ lf                          \r?\n
 
 {digit}{1,5}[uU]            {   return _UNSIGNED_NUMBER;   }
 [+-]?{digit}+               {   return _INT_NUMBER;        }
+[+-]?{digit}+\.{digit}+     {   return _REAL_NUMBER;       }
+
 '{char}'                    {   return _CHAR;       }
+\"{char}*\"                 {   return _STRING;       }
 
 "("                         {   return _LPAREN;     }
 ")"                         {   return _RPAREN;     }
