@@ -61,6 +61,8 @@ lf                          \r?\n
 "!="                        {  yylval.str = strdup(yytext); return _RELOP;      }
 "!"                         {   return _NEGATE;     }
 ":"                         {   return _COLON;      }
+"["                         {   return _LSBRACKET;      }
+"]"                         {   return _RSBRACKET;      }
 {lf}                        {                       }
 
 %%

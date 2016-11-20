@@ -1,9 +1,16 @@
 int main() {
     int a = 5;
     int b = 6;
+    int kuvajt = array[5];
     char* b;
     char c;
     char k = '1';
+
+    int array[];
+    int array2[2];
+    int array3[] = {1,2,3,4};
+
+    array[5] = 3;
 
     b = "asd";
     c = 'a';
@@ -42,6 +49,7 @@ int main() {
         return radi;
 
     do {
+        return "asd";
     } while(a<5);
 
     for ( i = 0; i < 5; i++ ) {
