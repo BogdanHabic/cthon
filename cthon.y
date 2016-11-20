@@ -64,6 +64,8 @@ program
         }
     |   function_list
         {
+        	puts("!!!!");
+        	puts($<str>1);
             fputs($<str>1, python); 
         }
     |   variable_list
@@ -80,11 +82,16 @@ variable_list
         }
     |   variable_list variable _ASSIGN exp _SEMICOLON        
         {
+        	//puts($<str>2);
             $<str>$ = strdup($<str>1);
             strcat($<str>$, $<str>2);
             strcat($<str>$, "=");
             strcat($<str>$, $<str>4);
             strcat($<str>$, "\n");
+             int i;
+            for (i = 0; i < depth; i++)
+                strcat($<str>$, "\t");
+           // puts($<str>$);
         }
     ;
 
@@ -139,6 +146,7 @@ parameter_list
 body
     :   _LBRACKET variable_list statement_list _RBRACKET
         {
+        	puts("hgh");
             $<str>$ = strdup("");
             int i;
             for (i = 0; i < depth; i++)
@@ -146,14 +154,17 @@ body
 
             strcat($<str>$, $<str>2);
             strcat($<str>$, $<str>3);
+            puts($<str>$);
         }
     |   _LBRACKET statement_list _RBRACKET
         {
+        	puts("auuuuu");
             $<str>$ = strdup("");
             int i;
             for (i = 0; i < depth; i++)
                 strcat($<str>$, "\t");
             strcat($<str>$, $<str>2);
+
         }
     ;
 
@@ -161,8 +172,11 @@ statement_list
     :   /* empty */ {$<str>$ = strdup("");}
     |   statement_list statement
         {
+        	puts("ovde1");
+            
             $<str>$ = strdup($<str>1);
             strcat($<str>$, $<str>2);
+             puts($<str>$);
         }
     ;
 
@@ -256,10 +270,10 @@ arguments
     ;
 
 if_statement
-    :   if_part
-    |   if_statement elif_part
-    |   if_statement elif_part else_part
-    |   if_part else_part
+    :   if_part {$<str>$ = strdup($<str>1);}
+    |   if_statement elif_part {$<str>$ = strdup($<str>1);}
+    |   if_statement elif_part else_part {$<str>$ = strdup($<str>1);}
+    |   if_part else_part {$<str>$ = strdup($<str>1);}
     ;
 
 if_part
@@ -357,6 +371,7 @@ compound_statement
 int main() {
     python = fopen("python.py", "w+");
     return yyparse();
+    fclose(python);
 }
 
 int yyerror(char *s) {
