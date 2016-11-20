@@ -35,11 +35,13 @@ int yyerror(char *s);
 %token _RBRACKET
 %token _ASSIGN
 %token _SEMICOLON
+%token _COLON
 %token _PLUS
 %token _MINUS
 %token _TIMES
 %token _DIV
 %token _RELOP
+%token _NEGATE
 %token _LF
 
 %%
@@ -96,6 +98,7 @@ statement_list
 statement
     :   assignment_statement
     |   if_statement
+    |   switch_statement
     |   return_statement
     |   compound_statement 
     ;
@@ -164,8 +167,32 @@ else_part
     |   _ELSE statement
     ;
 
+switch_statement
+    :   _SWITCH _LPAREN exp _RPAREN _LBRACKET case_list _RBRACKET
+    ;
+
+case_list
+    :   /* empty */
+    |   case_part
+    |   default_part
+    |   case_list case_part
+    |   case_list case_part default_part
+    ;
+
+case_part
+    :   _CASE exp _COLON statement_list
+    |   _CASE exp _COLON statement_list _BREAK _SEMICOLON
+    ;
+
+default_part
+    :   _DEFAULT _COLON statement_list
+    |   _DEFAULT _COLON statement_list _BREAK _SEMICOLON
+    ;
+
+
 rel_exp
     :   exp _RELOP exp
+    |   _NEGATE exp
     ;
 
 return_statement

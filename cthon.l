@@ -57,7 +57,9 @@ lf                          \r?\n
 ">="                        {   return _RELOP;      }
 "=="                        {   return _RELOP;      }
 "!="                        {   return _RELOP;      }
-{lf}                        {            }
+"!"                         {   return _NEGATE;      }
+":"                         {   return _COLON;      }
+{lf}                        {                       }
 
 %%
 

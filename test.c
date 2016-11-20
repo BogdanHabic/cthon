@@ -14,6 +14,8 @@ int main() {
     else if ( b > 2 ) {
         return asd;
     }
+    else if (!c) {
+    }
     else
         return 5 * 5;
 
