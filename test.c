@@ -1,7 +1,6 @@
 int main() {
     int a = 5;
     int b = 6;
-    int b;
     char* b;
     char c;
     char k = '1';

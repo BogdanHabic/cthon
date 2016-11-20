@@ -225,13 +225,18 @@ arithmetic_exp
     ;
 
 exp
-    :   constant
-    |   _ID
-    |   arithmetic_exp
-    |   function_call
-    |   rel_exp
-    |   inc_dec
-    |   _LPAREN exp _RPAREN /* @TODO: check if this works */
+    :   constant {$$ = strdup($1); }
+    |   _ID { $$ = strdup($1); }
+    |   arithmetic_exp { $$ = strdup($1); }
+    |   function_call { $$ = strdup($1); }
+    |   rel_exp { $$ = strdup($1); }
+    |   inc_dec { $$ = strdup($1); }
+    |   _LPAREN exp _RPAREN 
+        {
+            $$ = strdup("("); 
+            strcat($$, $2);
+            strcat($$, ")");
+        }
     ;
 
 constant
@@ -290,7 +295,7 @@ switch_statement
     ;
 
 case_list
-    :   /* empty */
+    :   /* empty */ {$$ = strdup("");}
     |   case_part
     |   default_part
     |   case_list case_part
