@@ -19,6 +19,10 @@ int main() {
     printf("Ovo je test %d", a);
     printf("Ovo je test %d");
 
+    scanf("Ovo je test %d", a, b);
+    scanf("Ovo je test %d", a);
+    scanf("Ovo je test %d");
+
   if(a==2)
     b = a;
 

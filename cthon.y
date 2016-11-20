@@ -200,6 +200,7 @@ statement
     |   switch_statement {$<str>$ = strdup($<str>1);}
     |   while_statement {$<str>$ = strdup($<str>1);}
     |   printf_statement {$<str>$ = strdup($<str>1);}
+    |   scanf_statement {$<str>$ = strdup($<str>1);}
     |   return_statement {$<str>$ = strdup($<str>1);}
     |   compound_statement  {$<str>$ = strdup($<str>1);}
     ;
