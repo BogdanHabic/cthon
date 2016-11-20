@@ -391,7 +391,19 @@ for_statement
 
 printf_statement
     :   _PRINTF _LPAREN _STRING _RPAREN _SEMICOLON
+        {
+            $<str>$ = strdup("\"");
+            strcat($<str>$, $<str>3);
+            strcat($<str>$, "\"");
+        }
     |   _PRINTF _LPAREN _STRING _COMMA arguments _RPAREN _SEMICOLON
+        {
+            $<str>$ = strdup("\"");
+            strcat($<str>$, $<str>3);
+            strcat($<str>$, "\"");
+            strcat($<str>$, "%");
+            strcat($<str>$, $<str>5);
+        }
     ;
 
 scanf_statement

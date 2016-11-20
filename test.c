@@ -12,6 +12,8 @@ int main() {
 
     array[5] = 3;
 
+    array = {1, 2, 3, 4, 5};
+
     b = "asd";
     c = 'a';
 
