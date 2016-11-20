@@ -2,13 +2,16 @@
 #include <ctype.h>	
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 int yyparse(void);
 int yylex(void);
 int yyerror(char *s);
 FILE *python;
 extern int depth;
+int current_switch = 0;
 
 void printTab(char* str, int d);
+char *str_replace ( const char *string, const char *substr, const char *replacement );
 
 %}
 
@@ -151,7 +154,24 @@ parameters
 
 parameter_list
     :   variable
+        {
+            $<str>$ = strdup($<str>1);
+        }
     |   parameter_list _COMMA variable
+        {
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, ",");
+            strcat($<str>$, $<str>3);
+        }
+    |   parameter_list variable
+        {
+            extern int yylineno;
+            printf("Missing comma in argument list at: %d", yylineno);
+
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, ",");
+            strcat($<str>$, $<str>2);
+        }
     ;
 
 body
@@ -332,34 +352,136 @@ if_part
 
 elif_part
     :   _ELIF _LPAREN rel_exp _RPAREN body
+        {
+            $<str>$ = strdup("");
+            //printTab($<str>$, depth - 1);
+            strcat($<str>$, "elif ");
+            strcat($<str>$, $<str>3);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>5);
+        }
     |   _ELIF _LPAREN rel_exp _RPAREN statement
+        {
+            $<str>$ = strdup("");
+            //printTab($<str>$, depth - 1);
+            strcat($<str>$, "elif ");
+            strcat($<str>$, $<str>3);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>5);
+        }
     ;
 
 else_part
     :   _ELSE body
+        {
+            $<str>$ = strdup("");
+            //printTab($<str>$, depth - 1);
+            strcat($<str>$, "else: \n ");
+            strcat($<str>$, $<str>2);
+        }
     |   _ELSE statement
+        {
+            $<str>$ = strdup("");
+            //printTab($<str>$, depth - 1);
+            strcat($<str>$, "else: \n ");
+            strcat($<str>$, $<str>2);
+        }
     ;
 
 switch_statement
     :   _SWITCH _LPAREN exp _RPAREN _LBRACKET case_list _RBRACKET
+        {
+          $<str>$ = strdup($<str>6);
+          $<str>$ = str_replace($<str>$, "###", $<str>3);
+          current_switch = 0;
+        }
     ;
 
 case_list
     :   /* empty */ {$<str>$ = strdup("");}
     |   case_part
+        {
+          $<str>$ = strdup($<str>1);
+        }
     |   default_part
+        {
+          $<str>$ = strdup($<str>1);
+        }
     |   case_list case_part
+        {
+          $<str>$ = strdup($<str>1);
+          strcat($<str>$, $<str>2);
+        }
     |   case_list case_part default_part
+        {
+          $<str>$ = strdup($<str>1);
+          strcat($<str>$, $<str>2);
+          strcat($<str>$, $<str>3);
+        }
     ;
 
 case_part
     :   _CASE exp _COLON statement_list
+        {
+         if(current_switch == 0) {
+             $<str>$ = strdup("if ");
+           strcat($<str>$, "###");
+           strcat($<str>$, "==");
+           strcat($<str>$, $<str>1);
+           strcat($<str>$, ":\n");
+           strcat($<str>$, $<str>4);
+           current_switch = 1;
+         } else {
+              $<str>$ = strdup("elif ");
+              strcat($<str>$, "###");
+              strcat($<str>$, "==");
+              strcat($<str>$, $<str>1);
+              strcat($<str>$, ":\n");
+              strcat($<str>$, $<str>4);
+          }
+        }
     |   _CASE exp _COLON statement_list _BREAK _SEMICOLON
+        {
+          if(current_switch == 0) {
+              $<str>$ = strdup("if ");
+              strcat($<str>$, "###");
+              strcat($<str>$, "==");
+              strcat($<str>$, $<str>1);
+              strcat($<str>$, ":\n");
+              strcat($<str>$, $<str>4);
+              current_switch = 1;
+          } else {
+              $<str>$ = strdup("elif ");
+              strcat($<str>$, "###");
+              strcat($<str>$, "==");
+              strcat($<str>$, $<str>1);
+              strcat($<str>$, ":\n");
+              strcat($<str>$, $<str>4);
+          }
+        }
     ;
 
 default_part
     :   _DEFAULT _COLON statement_list
+        {
+          if(current_switch == 0) {
+              $<str>$ = strdup("if True:\n");
+              strcat($<str>$, $<str>3);
+          } else {
+              $<str>$ = strdup("else:\n");
+              strcat($<str>$, $<str>3);
+          }
+        }
     |   _DEFAULT _COLON statement_list _BREAK _SEMICOLON
+        {
+          if(current_switch == 0) {
+              $<str>$ = strdup("if True:\n");
+              strcat($<str>$, $<str>3);
+          } else {
+              $<str>$ = strdup("else:\n");
+              strcat($<str>$, $<str>3);
+          }
+        }
     ;
 
 while_statement
@@ -506,3 +628,28 @@ void printTab(char* str, int d)
     for (i = 0; i < d; i++)
         strcat(str, "\t");
 }
+
+char *str_replace ( const char *string, const char *substr, const char *replacement ){
+  char *tok = NULL;
+  char *newstr = NULL;
+  char *oldstr = NULL;
+  /* if either substr or replacement is NULL, duplicate string a let caller handle it */
+  if ( substr == NULL || replacement == NULL ) return strdup (string);
+  newstr = strdup (string);
+  while ( (tok = strstr ( newstr, substr ))){
+    oldstr = newstr;
+    newstr = malloc ( strlen ( oldstr ) - strlen ( substr ) + strlen ( replacement ) + 1 );
+    /*failed to alloc mem, free old string and return NULL */
+    if ( newstr == NULL ){
+      free (oldstr);
+      return NULL;
+    }
+    memcpy ( newstr, oldstr, tok - oldstr );
+    memcpy ( newstr + (tok - oldstr), replacement, strlen ( replacement ) );
+    memcpy ( newstr + (tok - oldstr) + strlen( replacement ), tok + strlen ( substr ), strlen ( oldstr ) - strlen ( substr ) - ( tok - oldstr ) );
+    memset ( newstr + strlen ( oldstr ) - strlen ( substr ) + strlen ( replacement ) , 0, 1 );
+    free (oldstr);
+  }
+  return newstr;
+}
+
