@@ -2,6 +2,7 @@
 #include <ctype.h>	
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 int yyparse(void);
 int yylex(void);
 int yyerror(char *s);
@@ -10,7 +11,7 @@ extern int depth;
 int current_switch = 0;
 
 void printTab(char* str, int d);
-void strreplace(char *string[],char find[],char replaceWith[]);
+char *str_replace ( const char *string, const char *substr, const char *replacement );
 
 %}
 
@@ -391,7 +392,7 @@ switch_statement
     :   _SWITCH _LPAREN exp _RPAREN _LBRACKET case_list _RBRACKET
         {
           $<str>$ = strdup($<str>6);
-          strreplace($<str>$, "###", $<str>3);
+          $<str>$ = str_replace($<str>$, "###", $<str>3);
           current_switch = 0;
         }
     ;
@@ -621,13 +622,27 @@ void printTab(char* str, int d)
         strcat(str, "\t");
 }
 
-void strreplace(char *string[],char find[],char replaceWith[])
-{
-    if(strstr(*string,replaceWith) != NULL){
-        char *temporaryString;
-        sprintf(temporaryString,"%s",strstr(*string,find) + strlen(find));    //Create a string with what's after the replaced part
-        *strstr(*string,replaceWith) = '\0';    //Take away the part to replace and the part after it in the initial string
-        strcat(*string,replaceWith);    //Concat the first part of the string with the part to replace with
-        strcat(*string,temporaryString);    //Concat the first part of the string with the part after the replaced part
+char *str_replace ( const char *string, const char *substr, const char *replacement ){
+  char *tok = NULL;
+  char *newstr = NULL;
+  char *oldstr = NULL;
+  /* if either substr or replacement is NULL, duplicate string a let caller handle it */
+  if ( substr == NULL || replacement == NULL ) return strdup (string);
+  newstr = strdup (string);
+  while ( (tok = strstr ( newstr, substr ))){
+    oldstr = newstr;
+    newstr = malloc ( strlen ( oldstr ) - strlen ( substr ) + strlen ( replacement ) + 1 );
+    /*failed to alloc mem, free old string and return NULL */
+    if ( newstr == NULL ){
+      free (oldstr);
+      return NULL;
     }
+    memcpy ( newstr, oldstr, tok - oldstr );
+    memcpy ( newstr + (tok - oldstr), replacement, strlen ( replacement ) );
+    memcpy ( newstr + (tok - oldstr) + strlen( replacement ), tok + strlen ( substr ), strlen ( oldstr ) - strlen ( substr ) - ( tok - oldstr ) );
+    memset ( newstr + strlen ( oldstr ) - strlen ( substr ) + strlen ( replacement ) , 0, 1 );
+    free (oldstr);
+  }
+  return newstr;
 }
+
