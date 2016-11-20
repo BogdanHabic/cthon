@@ -68,7 +68,7 @@ program
     ;
 
 variable_list
-    :   /* empty */
+    :   /* empty */ {$$ = strdup("");}
     |   variable_list variable _SEMICOLON        
         {
             $$ = strdup("");

@@ -1,8 +1,6 @@
 int main() {
     int a = 5;
-<<<<<<< HEAD
     int b = 6;
-=======
     int b;
     char* b;
     char c;
