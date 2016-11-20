@@ -30,7 +30,15 @@ int main() {
     }
 
     while (a) {
+        int k = 6;
     }
+
+    while (a == 34) {
+        int k = 6;
+    }
+
+    while (a > 12)
+        return radi;
 
     return "";
 }

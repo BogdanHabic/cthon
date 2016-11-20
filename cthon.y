@@ -199,6 +199,7 @@ while_statement
 rel_exp
     :   exp _RELOP exp
     |   _NEGATE exp
+    |   exp
     ;
 
 return_statement
