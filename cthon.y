@@ -88,14 +88,17 @@ variable_list
     |   variable_list variable _ASSIGN exp _SEMICOLON        
         {
         	//puts($<str>2);
+            
             $<str>$ = strdup($<str>1);
+            int i;
+            for (i = 0; i < depth; i++)
+                strcat($<str>$, "\t");
             strcat($<str>$, $<str>2);
             strcat($<str>$, "=");
             strcat($<str>$, $<str>4);
             strcat($<str>$, "\n");
-             int i;
-            for (i = 0; i < depth; i++)
-                strcat($<str>$, "\t");
+             
+            
            // puts($<str>$);
         }
     ;
@@ -121,8 +124,7 @@ type
 
 function_list
     :   function
-        {
-            $<str>$ = strdup($<str>1);
+        {	
         }
     |   function_list function
         {
@@ -161,21 +163,21 @@ body
         {
         	puts("hgh");
             $<str>$ = strdup("");
-            int i;
-            for (i = 0; i < depth; i++)
-                strcat($<str>$, "\t");
+            //int i;
+           // for (i = 0; i < depth; i++)
+             //   strcat($<str>$, "\t");
 
             strcat($<str>$, $<str>2);
             strcat($<str>$, $<str>3);
-            puts($<str>$);
+            //puts($<str>$);
         }
     |   _LBRACKET statement_list _RBRACKET
         {
         	puts("auuuuu");
             $<str>$ = strdup("");
-            int i;
-            for (i = 0; i < depth; i++)
-                strcat($<str>$, "\t");
+            //int i;
+            //for (i = 0; i < depth; i++)
+              //  strcat($<str>$, "\t");
             strcat($<str>$, $<str>2);
 
         }
@@ -324,14 +326,22 @@ if_statement
 if_part
     :   _IF _LPAREN rel_exp _RPAREN body
         {
-            $<str>$ = strdup("if ");
+            int i;
+            $<str>$ = strdup("");
+            for (i = 0; i < depth - 1; i++)
+                strcat($<str>$, "\t");
+            strcat($<str>$, "if ");
             strcat($<str>$, $<str>3);
             strcat($<str>$, ":\n");
             strcat($<str>$, $<str>5);
         }
     |   _IF _LPAREN rel_exp _RPAREN statement
         {
-            $<str>$ = strdup("if ");
+            int i;
+            $<str>$ = strdup("");
+            for (i = 0; i < depth - 1; i++)
+                strcat($<str>$, "\t");
+            strcat($<str>$, "if ");
             strcat($<str>$, $<str>3);
             strcat($<str>$, ":\n");
             strcat($<str>$, $<str>5);
@@ -445,4 +455,11 @@ int yyerror(char *s) {
     extern int yylineno;
     fprintf(stderr, "%s at line %d\n", s, yylineno);
     return 0;
+}
+
+void printTab(char* str, int d)
+{
+    int i;
+    for (i = 0; i < d; i++)
+        strcat(str, "\t");
 }
