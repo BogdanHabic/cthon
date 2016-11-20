@@ -69,7 +69,6 @@ program
         }
     |   function_list
         {
-        	puts("!!!!");
         	puts($<str>1);
             fputs($<str>1, python); 
         }
@@ -86,9 +85,7 @@ variable_list
             $<str>$ = strdup("");
         }
     |   variable_list variable _ASSIGN exp _SEMICOLON        
-        {
-        	//puts($<str>2);
-            
+        {   
             $<str>$ = strdup($<str>1);
             int i;
             for (i = 0; i < depth; i++)
@@ -97,9 +94,6 @@ variable_list
             strcat($<str>$, "=");
             strcat($<str>$, $<str>4);
             strcat($<str>$, "\n");
-             
-            
-           // puts($<str>$);
         }
     ;
 
@@ -161,23 +155,13 @@ parameter_list
 body
     :   _LBRACKET variable_list statement_list _RBRACKET
         {
-        	puts("hgh");
             $<str>$ = strdup("");
-            //int i;
-           // for (i = 0; i < depth; i++)
-             //   strcat($<str>$, "\t");
-
             strcat($<str>$, $<str>2);
             strcat($<str>$, $<str>3);
-            //puts($<str>$);
         }
     |   _LBRACKET statement_list _RBRACKET
         {
-        	puts("auuuuu");
             $<str>$ = strdup("");
-            //int i;
-            //for (i = 0; i < depth; i++)
-              //  strcat($<str>$, "\t");
             strcat($<str>$, $<str>2);
 
         }
@@ -186,12 +170,11 @@ body
 statement_list
     :   /* empty */ {$<str>$ = strdup("");}
     |   statement_list statement
-        {
-        	puts("ovde1");
-            
+        {   
             $<str>$ = strdup($<str>1);
+            printTab($<str>$, depth - 1);
             strcat($<str>$, $<str>2);
-             puts($<str>$);
+            strcat($<str>$, "\n");
         }
     ;
 
@@ -326,10 +309,9 @@ if_statement
 if_part
     :   _IF _LPAREN rel_exp _RPAREN body
         {
-            int i;
+
             $<str>$ = strdup("");
-            for (i = 0; i < depth - 1; i++)
-                strcat($<str>$, "\t");
+            //printTab($<str>$, depth - 1);            
             strcat($<str>$, "if ");
             strcat($<str>$, $<str>3);
             strcat($<str>$, ":\n");
@@ -337,10 +319,8 @@ if_part
         }
     |   _IF _LPAREN rel_exp _RPAREN statement
         {
-            int i;
             $<str>$ = strdup("");
-            for (i = 0; i < depth - 1; i++)
-                strcat($<str>$, "\t");
+            //printTab($<str>$, depth - 1);
             strcat($<str>$, "if ");
             strcat($<str>$, $<str>3);
             strcat($<str>$, ":\n");
@@ -388,11 +368,34 @@ while_statement
 
 for_statement
     :   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN body
+        {
+            puts("!");
+            $<str>$ = strdup($<str>3);
+            strcat($<str>$, "\nwhile ");
+            strcat($<str>$, $<str>5);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>7);
+        }
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN statement
     |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN body
     |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN statement
     |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN body
+        {
+            puts("!");
+            $<str>$ = strdup($<str>3);
+            strcat($<str>$, "\nwhile ");
+            strcat($<str>$, $<str>5);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>7);
+        }
     |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN statement
+        {
+            $<str>$ = strdup($<str>3);
+            strcat($<str>$, "\nwhile ");
+            strcat($<str>$, $<str>5);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>7);
+        }
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN body
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN statement
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN body
@@ -411,19 +414,48 @@ scanf_statement
 
 inc_dec
     :   _ID _INC
+        {
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "++");
+        }
     |   _ID _DEC
+        {
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "--");
+        }
     |   _INC _ID
+        {
+            $<str>$ = strdup("++");
+            strcat($<str>$, $<str>2);
+        }
     |   _DEC _ID
+        {
+            $<str>$ = strdup("--");
+            strcat($<str>$, $<str>2);
+        }
     ;
 
 rel_exp
-    :   exp _RELOP exp 
+    :   exp _RELOP exp  
+        {
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, $<str>2);
+            strcat($<str>$, $<str>3);
+        }
     |   _NEGATE exp
-    |   exp
+        {
+            $<str>$ = strdup("!");
+            strcat($<str>$, $<str>2);
+        }
+    |   exp 
     ;
 
 return_statement
     :   _RETURN exp _SEMICOLON
+        {
+            $<str>$ = strdup("return ");
+            strcat($<str>$, $<str>2);
+        }
     ;
 
 compound_statement
