@@ -1,6 +1,6 @@
 %{
 	#include "y.tab.h"
-	extern YYSTYPE yylval;
+	int depth = 0;
 %}
 
 %option yylineno
@@ -31,19 +31,19 @@ lf                          \r?\n
 "while"                     {   return _WHILE;    }
 "do"                        {   return _DO;       }
 
-{letter}({letter}|{digit})* {   return _ID;       }
+{letter}({letter}|{digit})* {   yylval = strdup(yytext); return _ID;       }
 
-{digit}{1,5}[uU]            {   return _UNSIGNED_NUMBER;   }
-[+-]?{digit}+               {   return _INT_NUMBER;        }
-[+-]?{digit}+\.{digit}+     {   return _REAL_NUMBER;       }
+{digit}{1,5}[uU]            {   yylval = strdup(yytext); return _UNSIGNED_NUMBER;   }
+[+-]?{digit}+               {   yylval = strdup(yytext); return _INT_NUMBER;        }
+[+-]?{digit}+\.{digit}+     {   yylval = strdup(yytext); return _REAL_NUMBER;       }
 
-'{char}'                    {   return _CHAR;       }
-\"{char}*\"                 {   return _STRING;       }
+'{char}'                    {   yylval = strdup(yytext); return _CHAR;       }
+\"{char}*\"                 {   yylval = strdup(yytext); return _STRING;       }
 
 "("                         {   return _LPAREN;     }
 ")"                         {   return _RPAREN;     }
 ","                         {   return _COMMA;      }
-"{"                         {   return _LBRACKET;   }
+"{"                         {   depth++; return _LBRACKET;   }
 "}"                         {   return _RBRACKET;   }
 "="                         {   return _ASSIGN;     }
 ";"                         {   return _SEMICOLON;  }
@@ -53,13 +53,13 @@ lf                          \r?\n
 "-"                         {   return _MINUS;      }
 "*"                         {   return _TIMES;      }
 "/"                         {   return _DIV;        }
-"<"                         {   return _RELOP;      }
-">"                         {   return _RELOP;      }
-"<="                        {   return _RELOP;      }
-">="                        {   return _RELOP;      }
-"=="                        {   return _RELOP;      }
-"!="                        {   return _RELOP;      }
-"!"                         {   return _NEGATE;      }
+"<"                         {   yylval = strdup(yytext); return _RELOP;      }
+">"                         {   yylval = strdup(yytext); return _RELOP;      }
+"<="                        {   yylval = strdup(yytext); return _RELOP;      }
+">="                        {   yylval = strdup(yytext); return _RELOP;      }
+"=="                        {   yylval = strdup(yytext); return _RELOP;      }
+"!="                        {   yylval = strdup(yytext); return _RELOP;      }
+"!"                         {   return _NEGATE;     }
 ":"                         {   return _COLON;      }
 {lf}                        {                       }
 

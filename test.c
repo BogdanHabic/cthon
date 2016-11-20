@@ -1,5 +1,8 @@
 int main() {
     int a = 5;
+<<<<<<< HEAD
+    int b = 6;
+=======
     int b;
     char* b;
     char c;
@@ -79,4 +82,5 @@ int main() {
         return "opa";
 
     return "";
+>>>>>>> 27911e038e04348e765faea3dc53b9feade653ef
 }
