@@ -47,7 +47,6 @@ extern int depth;
 %token _DEC
 %token _LF
 
-
 %%
 
 
@@ -79,11 +78,6 @@ variable_list
             strcat($$, $2);
             strcat($$, "=");
             strcat($$, $4);
-            strcat($$, "\n");
-        }
-    |   variable_list variable _SEMICOLON
-        {
-            $$ = strdup($1);
             strcat($$, "\n");
         }
     ;
