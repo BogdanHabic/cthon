@@ -287,8 +287,6 @@ elif_part
 else_part
     :   _ELSE body
     |   _ELSE statement
-    :   if_part {$<str>$ = strdup($<str>1);}
-    |   if_part _ELSE statement
     ;
 
 switch_statement
