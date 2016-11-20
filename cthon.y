@@ -349,12 +349,40 @@ if_part
 
 elif_part
     :   _ELIF _LPAREN rel_exp _RPAREN body
+        {
+            $<str>$ = strdup("");
+            //printTab($<str>$, depth - 1);
+            strcat($<str>$, "elif ");
+            strcat($<str>$, $<str>3);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>5);
+        }
     |   _ELIF _LPAREN rel_exp _RPAREN statement
+        {
+            $<str>$ = strdup("");
+            //printTab($<str>$, depth - 1);
+            strcat($<str>$, "elif ");
+            strcat($<str>$, $<str>3);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>5);
+        }
     ;
 
 else_part
     :   _ELSE body
+        {
+            $<str>$ = strdup("");
+            //printTab($<str>$, depth - 1);
+            strcat($<str>$, "else: \n ");
+            strcat($<str>$, $<str>2);
+        }
     |   _ELSE statement
+        {
+            $<str>$ = strdup("");
+            //printTab($<str>$, depth - 1);
+            strcat($<str>$, "else: \n ");
+            strcat($<str>$, $<str>2);
+        }
     ;
 
 switch_statement
