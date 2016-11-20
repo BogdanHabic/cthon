@@ -372,9 +372,12 @@ for_statement
             puts("!");
             $<str>$ = strdup($<str>3);
             strcat($<str>$, "\nwhile ");
-            strcat($<str>$, $<str>5);
+            strcat($<str>$, $<str>4);
             strcat($<str>$, ":\n");
-            strcat($<str>$, $<str>7);
+            strcat($<str>$, $<str>8);
+            strcat($<str>$, "\n");
+            printTab($<str>$, depth);
+            strcat($<str>$, "@");
         }
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN statement
     |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN body
@@ -387,6 +390,10 @@ for_statement
             strcat($<str>$, $<str>5);
             strcat($<str>$, ":\n");
             strcat($<str>$, $<str>7);
+            strcat($<str>$, "\n");
+            printTab($<str>$, depth);
+            strcat($<str>$, "@");
+
         }
     |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN statement
         {
