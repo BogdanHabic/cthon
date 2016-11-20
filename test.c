@@ -3,6 +3,7 @@ int main() {
     int b;
     char* b;
     char c;
+    char k = '1';
 
     b = "asd";
     c = 'a';

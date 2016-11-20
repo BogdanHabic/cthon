@@ -53,9 +53,9 @@ program
     ;
 
 variable_list
-    :   variable _SEMICOLON
-    |   variable _ASSIGN exp _SEMICOLON
+    :   /* empty */
     |   variable_list variable _SEMICOLON
+    |   variable_list variable _ASSIGN exp _SEMICOLON
     ;
 
 variable
