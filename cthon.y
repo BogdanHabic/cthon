@@ -111,7 +111,7 @@ number
     ;
 
 arithmetic_exp
-    :   /* empty */
+    :   number
     |   arithmetic_exp _PLUS number
     |   arithmetic_exp _MINUS number
     |   arithmetic_exp _TIMES number
@@ -123,6 +123,7 @@ exp
     |   _ID
     |   arithmetic_exp
     |   function_call
+    |   rel_exp
     |   _LPAREN exp _RPAREN /* @TODO: check if this works */
     ;
 

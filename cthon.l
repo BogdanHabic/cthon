@@ -6,9 +6,10 @@
 %option yylineno
 
 letter                      [_a-zA-Z]
-char                        [\x00-\x7F]
+char                        [\x00-\x21\x23-\x7F]
 digit                       [0-9]
-type                        int|double|char|float
+type                        int|double|float
+char_type                   char
 lf                          \r?\n
 
 %%
@@ -16,6 +17,8 @@ lf                          \r?\n
 [ \t]+                      {   /* skip */    }
 
 {type}                      {   return _TYPE;     }
+{char_type}                 {   return _TYPE;     }
+{char_type}\s*\*            {   return _TYPE;     }
 "if"                        {   return _IF;       }
 "else"                      {   return _ELSE;     }
 "else if"                   {   return _ELIF;     }

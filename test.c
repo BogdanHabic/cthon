@@ -1,15 +1,11 @@
 int main() {
     int a = 5;
-
     int b;
-
     char* b;
+    char c;
+
     b = "asd";
+    c = 'a';
 
-    char 
-        c
-        ;
-    c = '1';
-
-    return 2 * 3;
+    return "";
 }
