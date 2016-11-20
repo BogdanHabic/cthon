@@ -47,6 +47,8 @@ extern int depth;
 %token <str> _NEGATE
 %token <str> _INC
 %token <str> _DEC
+%token <str> _LSBRACKET
+%token <str> _RSBRACKET
 %token <str> _LF
 
 %union
@@ -97,6 +99,14 @@ variable_list
 
 variable
     :   type _ID
+        {
+            $<str>$ = strdup($<str>2);
+        }
+    |   type _ID _LSBRACKET _RSBRACKET
+        {
+            $<str>$ = strdup($<str>2);
+        }
+    |   type _ID _LSBRACKET _INT_NUMBER _RSBRACKET
         {
             $<str>$ = strdup($<str>2);
         }
@@ -181,11 +191,11 @@ statement_list
     ;
 
 statement
-    :   assignment_statement {$<str>$ = strdup($<str>1);}
+    :   for_statement {$<str>$ = strdup($<str>1);}
+    |   assignment_statement {$<str>$ = strdup($<str>1);}
     |   if_statement {$<str>$ = strdup($<str>1);}
     |   switch_statement {$<str>$ = strdup($<str>1);}
     |   while_statement {$<str>$ = strdup($<str>1);}
-    |   for_statement {$<str>$ = strdup($<str>1);}
     |   return_statement {$<str>$ = strdup($<str>1);}
     |   compound_statement  {$<str>$ = strdup($<str>1);}
     ;
@@ -202,6 +212,15 @@ assignment_statement
             $<str>$ = strdup($<str>1);
             strcat($<str>$, "=");
             strcat($<str>$, $<str>3);
+        }
+    |   _ID _LSBRACKET exp _RSBRACKET _ASSIGN exp _SEMICOLON
+        {
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "[");
+            strcat($<str>$, strdup($<str>2));
+            strcat($<str>$, "]");
+            strcat($<str>$, "=");
+            strcat($<str>$, $<str>6);
         }
     ;
 
@@ -246,6 +265,8 @@ exp
     |   function_call { $<str>$ = strdup($<str>1); }
     |   rel_exp { $<str>$ = strdup($<str>1); }
     |   inc_dec { $<str>$ = strdup($<str>1); }
+    |   array_exp { $<str>$ = strdup($<str>1); }
+    |   array_ele_exp { $<str>$ = strdup($<str>1); }
     |   _LPAREN exp _RPAREN 
         {
             $<str>$ = strdup("("); 
@@ -262,6 +283,25 @@ constant
 
 function_call
     :   _ID _LPAREN arguments _RPAREN
+    ;
+
+array_exp
+    :   _LBRACKET exp_list _RBRACKET
+        {
+            $<str>$ = strdup("["); 
+            strcat($<str>$, $<str>1);
+            strcat($<str>$, "]");
+        }
+    ;
+
+array_ele_exp
+    :   _ID _LSBRACKET exp _RSBRACKET
+    ;
+
+exp_list
+    : /* empty */
+    |   exp
+    |   exp_list _COMMA exp
     ;
 
 arguments
@@ -332,14 +372,14 @@ while_statement
     ;
 
 for_statement
-    :   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON exp _RPAREN body
-    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON exp _RPAREN statement
-    |   _FOR _LPAREN _SEMICOLON rel_exp _SEMICOLON exp _RPAREN body
-    |   _FOR _LPAREN _SEMICOLON rel_exp _SEMICOLON exp _RPAREN statement
-    |   _FOR _LPAREN assignment_statement _SEMICOLON _SEMICOLON exp _RPAREN body
-    |   _FOR _LPAREN assignment_statement _SEMICOLON _SEMICOLON exp _RPAREN statement
-    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON _RPAREN body
-    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON _RPAREN statement
+    :   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN body
+    |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN statement
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN body
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN statement
     ;
@@ -352,7 +392,7 @@ inc_dec
     ;
 
 rel_exp
-    :   exp _RELOP exp
+    :   exp _RELOP exp 
     |   _NEGATE exp
     |   exp
     ;
@@ -365,13 +405,13 @@ compound_statement
     :   _LBRACKET statement_list _RBRACKET
     ;
 
-
 %%
 
 int main() {
     python = fopen("python.py", "w+");
-    return yyparse();
+    yyparse();
     fclose(python);
+    return 0;
 }
 
 int yyerror(char *s) {
