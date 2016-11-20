@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 int yyparse(void);
 int yylex(void);
 int yyerror(char *s);
@@ -12,6 +13,8 @@ int current_switch = 0;
 
 void printTab(char* str, int d);
 char *str_replace ( const char *string, const char *substr, const char *replacement );
+char *app_im(char* a, char*b);
+char *app(int count,...);
 
 %}
 
@@ -74,7 +77,7 @@ program
         }
     |   function_list
         {
-        	puts($<str>1);
+            puts($<str>1); 
             fputs($<str>1, python); 
         }
     |   variable_list
@@ -414,10 +417,10 @@ case_list
         }
     |   case_list case_part default_part
         {
-          $<str>$ = strdup($<str>1);
-          printf("asjkdhjkhsd");
-          strcat($<str>$, $<str>2);
-          strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>1, $<str>2, $<str>3);
+            //$<str>$ = strdup($<str>1);
+            //strcat($<str>$, $<str>2);
+            //strcat($<str>$, $<str>3);
         }
     ;
 
@@ -629,6 +632,31 @@ void printTab(char* str, int d)
     for (i = 0; i < d; i++)
         strcat(str, "\t");
 }
+
+char* app_im(char* a, char*b){
+    char* result;
+    result = malloc(strlen(a)+strlen(b)+1);
+    result = strcat(result, a);
+    result = strcat(result, b);
+    return result;
+}
+
+char *app(int count,...)
+{
+  va_list ap;
+  int i;
+  char *result = "";
+
+  va_start (ap, count);         /* Initialize the argument list. */
+
+  for (i = 0; i < count; i++)
+    result = app_im(result, va_arg (ap, char*));    /* Get the next argument value. */
+
+  va_end (ap);                  /* Clean up. */
+
+  return result;
+}
+
 
 char *str_replace ( const char *string, const char *substr, const char *replacement ){
   char *tok = NULL;
