@@ -144,11 +144,24 @@ arguments
 
 if_statement
     :   if_part
-    |   if_part _ELSE statement
+    |   if_statement elif_part
+    |   if_statement elif_part else_part
+    |   if_part else_part
     ;
 
 if_part
-    :   _IF _LPAREN rel_exp _RPAREN statement
+    :   _IF _LPAREN rel_exp _RPAREN body
+    |   _IF _LPAREN rel_exp _RPAREN statement
+    ;
+
+elif_part
+    :   _ELIF _LPAREN rel_exp _RPAREN body
+    |   _ELIF _LPAREN rel_exp _RPAREN statement
+    ;
+
+else_part
+    :   _ELSE body
+    |   _ELSE statement
     ;
 
 rel_exp
