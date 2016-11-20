@@ -99,6 +99,7 @@ statement
     :   assignment_statement
     |   if_statement
     |   switch_statement
+    |   while_statement
     |   return_statement
     |   compound_statement 
     ;
@@ -187,6 +188,11 @@ case_part
 default_part
     :   _DEFAULT _COLON statement_list
     |   _DEFAULT _COLON statement_list _BREAK _SEMICOLON
+    ;
+
+while_statement
+    :   _WHILE _LPAREN rel_exp _RPAREN body
+    |   _WHILE _LPAREN rel_exp _RPAREN statement
     ;
 
 

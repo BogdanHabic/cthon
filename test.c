@@ -29,5 +29,8 @@ int main() {
             return 'd';
     }
 
+    while (a) {
+    }
+
     return "";
 }
