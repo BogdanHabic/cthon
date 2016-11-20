@@ -41,6 +41,9 @@ int main() {
     while (a > 12)
         return radi;
 
+    do {
+    } while(a<5);
+
     for ( i = 0; i < 5; i++ ) {
         return "opa";
     }
