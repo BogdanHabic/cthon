@@ -1,91 +1,97 @@
 %{
-#include <ctype.h>
+#include <ctype.h>	
 #include <stdio.h>
+#include <string.h>
 int yyparse(void);
 int yylex(void);
 int yyerror(char *s);
 FILE *python;
 extern int depth;
+
 %}
 
-%token _TYPE
-%token _IF
-%token _ELSE
-%token _ELIF
-%token _SWITCH
-%token _CASE
-%token _DEFAULT
-%token _BREAK
-%token _FOR
-%token _WHILE
-%token _DO
-%token _RETURN
-%token _ID
+%token <str> _TYPE
+%token <str> _IF
+%token <str> _ELSE
+%token <str> _ELIF
+%token <str> _SWITCH
+%token <str> _CASE
+%token <str> _DEFAULT
+%token <str> _BREAK
+%token <str> _FOR
+%token <str> _WHILE
+%token <str> _DO
+%token <str> _RETURN
+%token <str> _ID
 
-%token _INT_NUMBER
-%token _REAL_NUMBER
-%token _UNSIGNED_NUMBER
+%token <str> _INT_NUMBER
+%token <str> _REAL_NUMBER
+%token <str> _UNSIGNED_NUMBER
 
-%token _CHAR
-%token _STRING
+%token <str> _CHAR
+%token <str> _STRING
 
-%token _LPAREN
-%token _RPAREN
-%token _COMMA
-%token _LBRACKET
-%token _RBRACKET
-%token _ASSIGN
-%token _SEMICOLON
-%token _COLON
-%token _PLUS
-%token _MINUS
-%token _TIMES
-%token _DIV
-%token _RELOP
-%token _NEGATE
-%token _INC
-%token _DEC
-%token _LF
+%token <str> _LPAREN
+%token <str> _RPAREN
+%token <str> _COMMA
+%token <str> _LBRACKET
+%token <str> _RBRACKET
+%token <str> _ASSIGN
+%token <str> _SEMICOLON
+%token <str> _COLON
+%token <str> _PLUS
+%token <str> _MINUS
+%token <str> _TIMES
+%token <str> _DIV
+%token <str> _RELOP
+%token <str> _NEGATE
+%token <str> _INC
+%token <str> _DEC
+%token <str> _LF
 
+%union
+{
+	char* str;
+}
 %%
 
 
 program
     :   variable_list function_list
         {
-            fputs($1, python);
-            fputs($2, python);
+            fputs($<str>1, python);
+            fputs($<str>2, python);
         }
     |   function_list
         {
-            fputs($1, python); 
+            fputs($<str>1, python); 
         }
     |   variable_list
         {
-            fputs($1, python);
+            fputs($<str>1, python);
         }
     ;
 
 variable_list
-    :   /* empty */ {$$ = strdup("");}
+    :   /* empty */ {$<str>$ = strdup("");}
     |   variable_list variable _SEMICOLON        
         {
-            $$ = strdup("");
+            $<str>$ = strdup("");
         }
     |   variable_list variable _ASSIGN exp _SEMICOLON        
         {
-            $$ = strdup($1);
-            strcat($$, $2);
-            strcat($$, "=");
-            strcat($$, $4);
-            strcat($$, "\n");
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, $<str>2);
+            strcat($<str>$, "=");
+            strcat($<str>$, $<str>4);
+            strcat($<str>$, "\n");
         }
     ;
 
 variable
     :   type _ID
         {
-            $$ = strdup($2);
+            $<str>$ = strdup($<str>2);
         }
     ;
 
@@ -96,32 +102,32 @@ type
 function_list
     :   function
         {
-            $$ = strdup($1);
+            $<str>$ = strdup($<str>1);
         }
     |   function_list function
         {
-            $$ = strdup($1);
-            strcat($$, $2);
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, $<str>2);
         }
     ;
 
 function
     :   type _ID _LPAREN parameters _RPAREN body
         {
-            $$ = strdup("def ");
-            if (strcmp($2, "main") == 0)
-                strcat($$, "__main__");
-            else strcat($$, $2);
-            strcat($$, "(");
-            strcat($$, $4);
-            strcat($$, ")\n");
-            strcat($$, $6);
+            $<str>$ = strdup("def ");
+            if (strcmp($<str>2, "main") == 0)
+                strcat($<str>$, "__main__");
+            else strcat($<str>$, $<str>2);
+            strcat($<str>$, "(");
+            strcat($<str>$, $<str>4);
+            strcat($<str>$, ")\n");
+            strcat($<str>$, $<str>6);
 
         }
     ;
 
 parameters
-    :   /* empty */ {$$ = strdup("");}
+    :   /* empty */ {$<str>$ = strdup("");}
     |   parameter_list
     ;
 
@@ -133,111 +139,111 @@ parameter_list
 body
     :   _LBRACKET variable_list statement_list _RBRACKET
         {
-            $$ = strdup("");
+            $<str>$ = strdup("");
             int i;
             for (i = 0; i < depth; i++)
-                strcat($$, "\t");
+                strcat($<str>$, "\t");
 
-            strcat($$, $2);
-            strcat($$, $3);
+            strcat($<str>$, $<str>2);
+            strcat($<str>$, $<str>3);
         }
     |   _LBRACKET statement_list _RBRACKET
         {
-            $$ = strdup("");
+            $<str>$ = strdup("");
             int i;
             for (i = 0; i < depth; i++)
-                strcat($$, "\t");
-            strcat($$, $2);
+                strcat($<str>$, "\t");
+            strcat($<str>$, $<str>2);
         }
     ;
 
 statement_list
-    :   /* empty */ {$$ = strdup("");}
+    :   /* empty */ {$<str>$ = strdup("");}
     |   statement_list statement
         {
-            $$ = strdup($1);
-            strcat($$, $2);
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, $<str>2);
         }
     ;
 
 statement
-    :   assignment_statement {$$ = strdup($1);}
-    |   if_statement {$$ = strdup($1);}
-    |   switch_statement {$$ = strdup($1);}
-    |   while_statement {$$ = strdup($1);}
-    |   for_statement {$$ = strdup($1);}
-    |   return_statement {$$ = strdup($1);}
-    |   compound_statement  {$$ = strdup($1);}
+    :   assignment_statement {$<str>$ = strdup($<str>1);}
+    |   if_statement {$<str>$ = strdup($<str>1);}
+    |   switch_statement {$<str>$ = strdup($<str>1);}
+    |   while_statement {$<str>$ = strdup($<str>1);}
+    |   for_statement {$<str>$ = strdup($<str>1);}
+    |   return_statement {$<str>$ = strdup($<str>1);}
+    |   compound_statement  {$<str>$ = strdup($<str>1);}
     ;
 
 assignment_statement
     :   _ID _ASSIGN exp
         {
-            $$ = strdup($1);
-            strcat($$, "=");
-            strcat($$, $3);
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "=");
+            strcat($<str>$, $<str>3);
         }
     |   _ID _ASSIGN exp _SEMICOLON
         {
-            $$ = strdup($1);
-            strcat($$, "=");
-            strcat($$, $3);
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "=");
+            strcat($<str>$, $<str>3);
         }
     ;
 
 number
-    :   _INT_NUMBER {$$ = strdup($1);}
-    |   _UNSIGNED_NUMBER {$$ = strdup($1);}
-    |   _REAL_NUMBER {$$ = strdup($1);}
+    :   _INT_NUMBER {$<str>$ = strdup($<str>1);}
+    |   _UNSIGNED_NUMBER {$<str>$ = strdup($<str>1);}
+    |   _REAL_NUMBER {$<str>$ = strdup($<str>1);}
     ;
 
 arithmetic_exp
     :   number
     |   arithmetic_exp _PLUS number
         {
-            $$ = strdup($1);
-            strcat($$, "+");
-            strcat($$, $3);
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "+");
+            strcat($<str>$, $<str>3);
         }
     |   arithmetic_exp _MINUS number
          {
-            $$ = strdup($1);
-            strcat($$, "-");
-            strcat($$, $3);
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "-");
+            strcat($<str>$, $<str>3);
         }
     |   arithmetic_exp _TIMES number
          {
-            $$ = strdup($1);
-            strcat($$, "*");
-            strcat($$, $3);
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "*");
+            strcat($<str>$, $<str>3);
         }
     |   arithmetic_exp _DIV number
          {
-            $$ = strdup($1);
-            strcat($$, "/");
-            strcat($$, $3);
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, "/");
+            strcat($<str>$, $<str>3);
         }
     ;
 
 exp
-    :   constant {$$ = strdup($1); }
-    |   _ID { $$ = strdup($1); }
-    |   arithmetic_exp { $$ = strdup($1); }
-    |   function_call { $$ = strdup($1); }
-    |   rel_exp { $$ = strdup($1); }
-    |   inc_dec { $$ = strdup($1); }
+    :   constant {$<str>$ = strdup($<str>1); }
+    |   _ID { $<str>$ = strdup($<str>1); }
+    |   arithmetic_exp { $<str>$ = strdup($<str>1); }
+    |   function_call { $<str>$ = strdup($<str>1); }
+    |   rel_exp { $<str>$ = strdup($<str>1); }
+    |   inc_dec { $<str>$ = strdup($<str>1); }
     |   _LPAREN exp _RPAREN 
         {
-            $$ = strdup("("); 
-            strcat($$, $2);
-            strcat($$, ")");
+            $<str>$ = strdup("("); 
+            strcat($<str>$, $<str>2);
+            strcat($<str>$, ")");
         }
     ;
 
 constant
-    :   _CHAR {$$ = strdup($1); }
-    |   _STRING {$$ = strdup($1); }
-    |   number {$$ = strdup($1); }
+    :   _CHAR {$<str>$ = strdup($<str>1); }
+    |   _STRING {$<str>$ = strdup($<str>1); }
+    |   number {$<str>$ = strdup($<str>1); }
     ;
 
 function_call
@@ -259,17 +265,17 @@ if_statement
 if_part
     :   _IF _LPAREN rel_exp _RPAREN body
         {
-            $$ = strdup("if ");
-            strcat($$, $3);
-            strcat($$, ":\n");
-            strcat($$, $5);
+            $<str>$ = strdup("if ");
+            strcat($<str>$, $<str>3);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>5);
         }
     |   _IF _LPAREN rel_exp _RPAREN statement
         {
-            $$ = strdup("if ");
-            strcat($$, $3);
-            strcat($$, ":\n");
-            strcat($$, $5);
+            $<str>$ = strdup("if ");
+            strcat($<str>$, $<str>3);
+            strcat($<str>$, ":\n");
+            strcat($<str>$, $<str>5);
         }
     ;
 
@@ -281,7 +287,7 @@ elif_part
 else_part
     :   _ELSE body
     |   _ELSE statement
-    :   if_part {$$ = strdup($1);}
+    :   if_part {$<str>$ = strdup($<str>1);}
     |   if_part _ELSE statement
     ;
 
@@ -290,7 +296,7 @@ switch_statement
     ;
 
 case_list
-    :   /* empty */ {$$ = strdup("");}
+    :   /* empty */ {$<str>$ = strdup("");}
     |   case_part
     |   default_part
     |   case_list case_part

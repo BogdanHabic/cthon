@@ -31,14 +31,14 @@ lf                          \r?\n
 "while"                     {   return _WHILE;    }
 "do"                        {   return _DO;       }
 
-{letter}({letter}|{digit})* {   yylval = strdup(yytext); return _ID;       }
+{letter}({letter}|{digit})* {  yylval.str = strdup(yytext); return _ID;       }
 
-{digit}{1,5}[uU]            {   yylval = strdup(yytext); return _UNSIGNED_NUMBER;   }
-[+-]?{digit}+               {   yylval = strdup(yytext); return _INT_NUMBER;        }
-[+-]?{digit}+\.{digit}+     {   yylval = strdup(yytext); return _REAL_NUMBER;       }
+{digit}{1,5}[uU]            {  yylval.str = strdup(yytext); return _UNSIGNED_NUMBER;   }
+[+-]?{digit}+               {  yylval.str = strdup(yytext); return _INT_NUMBER;        }
+[+-]?{digit}+\.{digit}+     {  yylval.str = strdup(yytext); return _REAL_NUMBER;       }
 
-'{char}'                    {   yylval = strdup(yytext); return _CHAR;       }
-\"{char}*\"                 {   yylval = strdup(yytext); return _STRING;       }
+'{char}'                    {  yylval.str = strdup(yytext); return _CHAR;       }
+\"{char}*\"                 {  yylval.str = strdup(yytext); return _STRING;       }
 
 "("                         {   return _LPAREN;     }
 ")"                         {   return _RPAREN;     }
@@ -53,12 +53,12 @@ lf                          \r?\n
 "-"                         {   return _MINUS;      }
 "*"                         {   return _TIMES;      }
 "/"                         {   return _DIV;        }
-"<"                         {   yylval = strdup(yytext); return _RELOP;      }
-">"                         {   yylval = strdup(yytext); return _RELOP;      }
-"<="                        {   yylval = strdup(yytext); return _RELOP;      }
-">="                        {   yylval = strdup(yytext); return _RELOP;      }
-"=="                        {   yylval = strdup(yytext); return _RELOP;      }
-"!="                        {   yylval = strdup(yytext); return _RELOP;      }
+"<"                         {  yylval.str = strdup(yytext); return _RELOP;      }
+">"                         {  yylval.str = strdup(yytext); return _RELOP;      }
+"<="                        {  yylval.str = strdup(yytext); return _RELOP;      }
+">="                        {  yylval.str = strdup(yytext); return _RELOP;      }
+"=="                        {  yylval.str = strdup(yytext); return _RELOP;      }
+"!="                        {  yylval.str = strdup(yytext); return _RELOP;      }
 "!"                         {   return _NEGATE;     }
 ":"                         {   return _COLON;      }
 {lf}                        {                       }
