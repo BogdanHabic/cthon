@@ -7,7 +7,7 @@ a.out: lex.yy.c y.tab.c
 	gcc -o $@ $+ 
 
 lex.yy.c: $(LEX_SRC) y.tab.c
-	lex -d -I $<
+	lex -I $<
 
 y.tab.c: $(YACC_SRC)
 	yacc -d -v $<

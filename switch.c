@@ -8,4 +8,6 @@ int main() {
         default:
             return 'd';
     }
+
+    return 0;
 }

@@ -415,6 +415,7 @@ case_list
     |   case_list case_part default_part
         {
           $<str>$ = strdup($<str>1);
+          printf("asjkdhjkhsd");
           strcat($<str>$, $<str>2);
           strcat($<str>$, $<str>3);
         }
