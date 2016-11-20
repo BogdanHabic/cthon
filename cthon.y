@@ -76,8 +76,9 @@ variable_list
     |   variable_list variable _ASSIGN exp _SEMICOLON        
         {
             $$ = strdup($1);
+            strcat($$, $2);
             strcat($$, "=");
-            strcat($$, $3);
+            strcat($$, $4);
             strcat($$, "\n");
         }
     |   variable_list variable _SEMICOLON
@@ -240,9 +241,9 @@ exp
     ;
 
 constant
-    :   _CHAR
-    |   _STRING
-    |   number
+    :   _CHAR {$$ = strdup($1); }
+    |   _STRING {$$ = strdup($1); }
+    |   number {$$ = strdup($1); }
     ;
 
 function_call
@@ -315,6 +316,7 @@ default_part
 while_statement
     :   _WHILE _LPAREN rel_exp _RPAREN body
     |   _WHILE _LPAREN rel_exp _RPAREN statement
+    |   _DO body _WHILE _LPAREN rel_exp _RPAREN _SEMICOLON
     ;
 
 for_statement

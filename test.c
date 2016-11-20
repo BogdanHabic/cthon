@@ -1,7 +1,7 @@
 int main() {
-    int a = 5;
-    int b = 6;
     char* b;
+    int a;
+    int b = 6;
     char c;
     char k = '1';
 
