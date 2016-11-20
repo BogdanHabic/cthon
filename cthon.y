@@ -51,6 +51,9 @@ extern int depth;
 %token <str> _RSBRACKET
 %token <str> _LF
 
+%token <str> _PRINTF;
+%token <str> _SCANF;
+
 %union
 {
 	char* str;
@@ -382,6 +385,11 @@ for_statement
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN statement
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN body
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN statement
+    ;
+
+printf_statement
+    :   _PRINTF _LPAREN _STRING _RPAREN _SEMICOLON
+    |   _PRINTF _LPAREN _STRING _COMMA arguments _RPAREN _SEMICOLON
     ;
 
 inc_dec

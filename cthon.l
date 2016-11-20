@@ -63,6 +63,8 @@ lf                          \r?\n
 ":"                         {   return _COLON;      }
 "["                         {   return _LSBRACKET;      }
 "]"                         {   return _RSBRACKET;      }
+"printf"                    {   return _PRINF;      }
+"scanf"                     {   return _SCANF;      }
 {lf}                        {                       }
 
 %%

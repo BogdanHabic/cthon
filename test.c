@@ -15,6 +15,10 @@ int main() {
     b = "asd";
     c = 'a';
 
+    printf("Ovo je test %d", a, b);
+    printf("Ovo je test %d", a);
+    printf("Ovo je test %d");
+
   if(a==2)
     b = a;
 
