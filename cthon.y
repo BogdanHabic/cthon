@@ -7,6 +7,7 @@ int yylex(void);
 int yyerror(char *s);
 FILE *python;
 extern int depth;
+char *g_switch;
 
 void printTab(char* str, int d);
 
@@ -387,6 +388,9 @@ else_part
 
 switch_statement
     :   _SWITCH _LPAREN exp _RPAREN _LBRACKET case_list _RBRACKET
+        {
+            g_switch = strdup(exp);
+        }
     ;
 
 case_list
