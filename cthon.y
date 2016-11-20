@@ -412,7 +412,9 @@ printf_statement
             strcat($<str>$, $<str>3);
             strcat($<str>$, "\"");
             strcat($<str>$, "%");
+            strcat($<str>$, "(");
             strcat($<str>$, $<str>5);
+            strcat($<str>$, ")");
         }
     ;
 
