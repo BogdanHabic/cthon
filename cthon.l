@@ -31,7 +31,9 @@ lf                          \r?\n
 "while"                     {   return _WHILE;    }
 "do"                        {   return _DO;       }
 
-"printf"                    {   return _PRINTF;      }
+"printf"                    {   return _PRINTF;   }
+"scanf"                     {   return _SCANF;    }
+
 {letter}({letter}|{digit})* {  yylval.str = strdup(yytext); return _ID;       }
 
 {digit}{1,5}[uU]            {  yylval.str = strdup(yytext); return _UNSIGNED_NUMBER;   }
@@ -64,7 +66,6 @@ lf                          \r?\n
 ":"                         {   return _COLON;      }
 "["                         {   return _LSBRACKET;      }
 "]"                         {   return _RSBRACKET;      }
-"scanf"                     {   return _SCANF;      }
 {lf}                        {                       }
 
 %%

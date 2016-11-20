@@ -393,6 +393,11 @@ printf_statement
     |   _PRINTF _LPAREN _STRING _COMMA arguments _RPAREN _SEMICOLON
     ;
 
+scanf_statement
+    :   _SCANF _LPAREN _STRING _RPAREN _SEMICOLON
+    |   _SCANF _LPAREN _STRING _COMMA arguments _RPAREN _SEMICOLON
+    ;
+
 inc_dec
     :   _ID _INC
     |   _ID _DEC
