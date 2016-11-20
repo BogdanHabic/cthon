@@ -8,6 +8,8 @@ int yyerror(char *s);
 FILE *python;
 extern int depth;
 
+void printTab(char* str, int d);
+
 %}
 
 %token <str> _TYPE
