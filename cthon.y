@@ -199,6 +199,7 @@ statement
     |   if_statement {$<str>$ = strdup($<str>1);}
     |   switch_statement {$<str>$ = strdup($<str>1);}
     |   while_statement {$<str>$ = strdup($<str>1);}
+    |   printf_statement {$<str>$ = strdup($<str>1);}
     |   return_statement {$<str>$ = strdup($<str>1);}
     |   compound_statement  {$<str>$ = strdup($<str>1);}
     ;
