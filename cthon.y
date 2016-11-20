@@ -8,6 +8,7 @@ int yyerror(char *s);
 FILE *python;
 extern int depth;
 char *g_switch;
+int current_switch = 0;
 
 void printTab(char* str, int d);
 
@@ -389,26 +390,97 @@ else_part
 switch_statement
     :   _SWITCH _LPAREN exp _RPAREN _LBRACKET case_list _RBRACKET
         {
-            g_switch = strdup(exp);
+            g_switch = strdup($<str>3);
+            $<str>$ = strdup($<str>6);
+            current_switch = 0;
         }
     ;
 
 case_list
     :   /* empty */ {$<str>$ = strdup("");}
     |   case_part
+        {
+            $<str>$ = strdup($<str>1);
+        }
     |   default_part
+        {
+            $<str>$ = strdup($<str>1);
+        }
     |   case_list case_part
+        {
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, $<str>2);
+        }
     |   case_list case_part default_part
+        {
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, $<str>2);
+            strcat($<str>$, $<str>3);
+        }
     ;
 
 case_part
     :   _CASE exp _COLON statement_list
+        {
+            if(current_switch == 0) {
+                $<str>$ = strdup("if ");
+                strcat($<str>$, g_switch);
+                strcat($<str>$, "==");
+                strcat($<str>$, $<str>1);
+                strcat($<str>$, ":\n");
+                strcat($<str>$, $<str>4);
+                current_switch = 1;
+            } else {
+                $<str>$ = strdup("elif ");
+                strcat($<str>$, g_switch);
+                strcat($<str>$, "==");
+                strcat($<str>$, $<str>1);
+                strcat($<str>$, ":\n");
+                strcat($<str>$, $<str>4);
+            }
+        }
     |   _CASE exp _COLON statement_list _BREAK _SEMICOLON
+        {
+            if(current_switch == 0) {
+                $<str>$ = strdup("if ");
+                strcat($<str>$, g_switch);
+                strcat($<str>$, "==");
+                strcat($<str>$, $<str>1);
+                strcat($<str>$, ":\n");
+                strcat($<str>$, $<str>4);
+                current_switch = 1;
+            } else {
+                $<str>$ = strdup("elif ");
+                strcat($<str>$, g_switch);
+                strcat($<str>$, "==");
+                strcat($<str>$, $<str>1);
+                strcat($<str>$, ":\n");
+                strcat($<str>$, $<str>4);
+            }
+        }
     ;
 
 default_part
     :   _DEFAULT _COLON statement_list
+        {
+            if(current_switch == 0) {
+                $<str>$ = strdup("if True:\n");
+                strcat($<str>$, $<str>3);
+            } else {
+                $<str>$ = strdup("else:\n");
+                strcat($<str>$, $<str>3);
+            }
+        }
     |   _DEFAULT _COLON statement_list _BREAK _SEMICOLON
+        {
+            if(current_switch == 0) {
+                $<str>$ = strdup("if True:\n");
+                strcat($<str>$, $<str>3);
+            } else {
+                $<str>$ = strdup("else:\n");
+                strcat($<str>$, $<str>3);
+            }
+        }
     ;
 
 while_statement
