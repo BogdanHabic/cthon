@@ -151,7 +151,24 @@ parameters
 
 parameter_list
     :   variable
+        {
+            $<str>$ = strdup($<str>1);
+        }
     |   parameter_list _COMMA variable
+        {
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, ",");
+            strcat($<str>$, $<str>3);
+        }
+    |   parameter_list variable
+        {
+            extern int yylineno;
+            printf("Missing comma in argument list at: %d", yylineno);
+
+            $<str>$ = strdup($<str>1);
+            strcat($<str>$, ",");
+            strcat($<str>$, $<str>2);
+        }
     ;
 
 body
