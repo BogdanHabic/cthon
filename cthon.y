@@ -36,11 +36,13 @@ extern int depth;
 %token _RBRACKET
 %token _ASSIGN
 %token _SEMICOLON
+%token _COLON
 %token _PLUS
 %token _MINUS
 %token _TIMES
 %token _DIV
 %token _RELOP
+%token _NEGATE
 %token _LF
 
 
@@ -64,6 +66,7 @@ program
     ;
 
 variable_list
+<<<<<<< HEAD
     :   variable _SEMICOLON
         {
             $$ = strdup("");
@@ -80,6 +83,11 @@ variable_list
             $$ = strdup($1);
             strcat($$, "\n");
         }
+=======
+    :   /* empty */
+    |   variable_list variable _SEMICOLON
+    |   variable_list variable _ASSIGN exp _SEMICOLON
+>>>>>>> 27911e038e04348e765faea3dc53b9feade653ef
     ;
 
 variable
@@ -161,10 +169,19 @@ statement_list
     ;
 
 statement
+<<<<<<< HEAD
     :   assignment_statement {$$ = strdup($1);}
     |   if_statement {$$ = strdup($1);}
     |   return_statement {$$ = strdup($1);}
     |   compound_statement {$$ = strdup($1);}
+=======
+    :   assignment_statement
+    |   if_statement
+    |   switch_statement
+    |   while_statement
+    |   return_statement
+    |   compound_statement 
+>>>>>>> 27911e038e04348e765faea3dc53b9feade653ef
     ;
 
 assignment_statement
@@ -270,8 +287,38 @@ else_part
     |   if_part _ELSE statement
     ;
 
+switch_statement
+    :   _SWITCH _LPAREN exp _RPAREN _LBRACKET case_list _RBRACKET
+    ;
+
+case_list
+    :   /* empty */
+    |   case_part
+    |   default_part
+    |   case_list case_part
+    |   case_list case_part default_part
+    ;
+
+case_part
+    :   _CASE exp _COLON statement_list
+    |   _CASE exp _COLON statement_list _BREAK _SEMICOLON
+    ;
+
+default_part
+    :   _DEFAULT _COLON statement_list
+    |   _DEFAULT _COLON statement_list _BREAK _SEMICOLON
+    ;
+
+while_statement
+    :   _WHILE _LPAREN rel_exp _RPAREN body
+    |   _WHILE _LPAREN rel_exp _RPAREN statement
+    ;
+
+
 rel_exp
     :   exp _RELOP exp
+    |   _NEGATE exp
+    |   exp
     ;
 
 return_statement

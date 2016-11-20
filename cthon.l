@@ -51,6 +51,7 @@ lf                          \r?\n
 "-"                         {   return _MINUS;      }
 "*"                         {   return _TIMES;      }
 "/"                         {   return _DIV;        }
+<<<<<<< HEAD
 "<"                         {   yylval = strdup(yytext); return _RELOP;      }
 ">"                         {   yylval = strdup(yytext); return _RELOP;      }
 "<="                        {   yylval = strdup(yytext); return _RELOP;      }
@@ -58,6 +59,17 @@ lf                          \r?\n
 "=="                        {   yylval = strdup(yytext); return _RELOP;      }
 "!="                        {   yylval = strdup(yytext); return _RELOP;      }
 {lf}                        {            }
+=======
+"<"                         {   return _RELOP;      }
+">"                         {   return _RELOP;      }
+"<="                        {   return _RELOP;      }
+">="                        {   return _RELOP;      }
+"=="                        {   return _RELOP;      }
+"!="                        {   return _RELOP;      }
+"!"                         {   return _NEGATE;      }
+":"                         {   return _COLON;      }
+{lf}                        {                       }
+>>>>>>> 27911e038e04348e765faea3dc53b9feade653ef
 
 %%
 
