@@ -48,6 +48,8 @@ lf                          \r?\n
 "="                         {   return _ASSIGN;     }
 ";"                         {   return _SEMICOLON;  }
 "+"                         {   return _PLUS;       }
+"++"                        {   return _INC;        }
+"--"                        {   return _DEC;        }
 "-"                         {   return _MINUS;      }
 "*"                         {   return _TIMES;      }
 "/"                         {   return _DIV;        }

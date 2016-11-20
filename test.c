@@ -41,5 +41,42 @@ int main() {
     while (a > 12)
         return radi;
 
+    for ( 
+            i
+            = 0; i < 123; i++ ) {
+        return "opa";
+    }
+
+    for ( i = 0; i < 123;) {
+        return "opa";
+    }
+
+    for (; i < 123; i++ ) {
+        return "opa";
+    }
+
+    for ( i = 0;; i++ ) {
+        return "opa";
+    }
+
+    for (;;) {
+        return "opa";
+    }
+
+    for ( i = 0; i < 123; i++ )
+        return "opa";
+
+    for ( i = 0; i < 123;)
+        return "opa";
+
+    for (; i < 123; i++ )
+        return "opa";
+
+    for ( i = 0;; i++ )
+        return "opa";
+
+    for (;;) 
+        return "opa";
+
     return "";
 }

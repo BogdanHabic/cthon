@@ -42,6 +42,8 @@ int yyerror(char *s);
 %token _DIV
 %token _RELOP
 %token _NEGATE
+%token _INC
+%token _DEC
 %token _LF
 
 %%
@@ -100,12 +102,14 @@ statement
     |   if_statement
     |   switch_statement
     |   while_statement
+    |   for_statement
     |   return_statement
     |   compound_statement 
     ;
 
 assignment_statement
-    :   _ID _ASSIGN exp _SEMICOLON
+    :   _ID _ASSIGN exp
+    |   assignment_statement _SEMICOLON
     ;
 
 number
@@ -128,6 +132,7 @@ exp
     |   arithmetic_exp
     |   function_call
     |   rel_exp
+    |   inc_dec
     |   _LPAREN exp _RPAREN /* @TODO: check if this works */
     ;
 
@@ -195,6 +200,25 @@ while_statement
     |   _WHILE _LPAREN rel_exp _RPAREN statement
     ;
 
+for_statement
+    :   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN _SEMICOLON rel_exp _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN _SEMICOLON rel_exp _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN assignment_statement _SEMICOLON _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN assignment_statement _SEMICOLON _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON _RPAREN body
+    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON _RPAREN statement
+    |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN body
+    |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN statement
+    ;
+
+inc_dec
+    :   _ID _INC
+    |   _ID _DEC
+    |   _INC _ID
+    |   _DEC _ID
+    ;
 
 rel_exp
     :   exp _RELOP exp
