@@ -1,5 +1,5 @@
 int main() {
-    int a;
+    int a = 5;
     int b = 6;
     char* b;
     char c;
@@ -41,9 +41,7 @@ int main() {
     while (a > 12)
         return radi;
 
-    for ( 
-            i
-            = 0; i < 123; i++ ) {
+    for ( i = 0; i < 5; i++ ) {
         return "opa";
     }
 

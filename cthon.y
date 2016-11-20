@@ -167,11 +167,11 @@ statement_list
     ;
 
 statement
-    :   assignment_statement {$<str>$ = strdup($<str>1);}
+    :   for_statement {$<str>$ = strdup($<str>1);}
+    |   assignment_statement {$<str>$ = strdup($<str>1);}
     |   if_statement {$<str>$ = strdup($<str>1);}
     |   switch_statement {$<str>$ = strdup($<str>1);}
     |   while_statement {$<str>$ = strdup($<str>1);}
-    |   for_statement {$<str>$ = strdup($<str>1);}
     |   return_statement {$<str>$ = strdup($<str>1);}
     |   compound_statement  {$<str>$ = strdup($<str>1);}
     ;
@@ -318,14 +318,14 @@ while_statement
     ;
 
 for_statement
-    :   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON exp _RPAREN body
-    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON exp _RPAREN statement
-    |   _FOR _LPAREN _SEMICOLON rel_exp _SEMICOLON exp _RPAREN body
-    |   _FOR _LPAREN _SEMICOLON rel_exp _SEMICOLON exp _RPAREN statement
-    |   _FOR _LPAREN assignment_statement _SEMICOLON _SEMICOLON exp _RPAREN body
-    |   _FOR _LPAREN assignment_statement _SEMICOLON _SEMICOLON exp _RPAREN statement
-    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON _RPAREN body
-    |   _FOR _LPAREN assignment_statement _SEMICOLON rel_exp _SEMICOLON _RPAREN statement
+    :   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN body
+    |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN statement
+    |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN body
+    |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN statement
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN body
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN statement
     ;
@@ -338,7 +338,7 @@ inc_dec
     ;
 
 rel_exp
-    :   exp _RELOP exp
+    :   exp _RELOP exp 
     |   _NEGATE exp
     |   exp
     ;
@@ -351,12 +351,13 @@ compound_statement
     :   _LBRACKET statement_list _RBRACKET
     ;
 
-
 %%
 
 int main() {
     python = fopen("python.py", "w+");
-    return yyparse();
+    yyparse();
+    fclose(python);
+    return 0;
 }
 
 int yyerror(char *s) {
