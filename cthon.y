@@ -186,7 +186,8 @@ statement_list
     |   statement_list statement
         {
             $<str>$ = strdup($<str>1);
-            $<str>$ = app(2, printTab($<str>$, depth - 1), $<str>2);
+            //printf("Depth %d", depth);
+            $<str>$ = app(2, printTab($<str>$, depth), $<str>2);
         }
     ;
 
@@ -355,12 +356,12 @@ if_part
     :   _IF _LPAREN rel_exp _RPAREN body
         {
             $<str>$ = strdup("");
-            $<str>$ = app(5, printTab($<str>$, depth - 1), "if ", $<str>3, ":\n", $<str>5);
+            $<str>$ = app(5, printTab("", depth - 1), "if ", $<str>3, ":\n", $<str>5);
         }
     |   _IF _LPAREN rel_exp _RPAREN statement
         {
             $<str>$ = strdup("");
-            $<str>$ = app(5, printTab($<str>$, depth - 1), "if ", $<str>3, ":\n", $<str>5);
+            $<str>$ = app(6, printTab("", depth - 1), "if ", $<str>3, ":\n", printTab("", depth + 1), $<str>5);
         }
     ;
 
@@ -368,12 +369,12 @@ elif_part
     :   _ELIF _LPAREN rel_exp _RPAREN body
         {
             $<str>$ = strdup("");
-            $<str>$ = app(5, printTab($<str>$, depth - 1), "elif ", $<str>3, ":\n", $<str>5);
+            $<str>$ = app(5, printTab("", depth - 1), "elif ", $<str>3, ":\n", $<str>5);
         }
     |   _ELIF _LPAREN rel_exp _RPAREN statement
         {
             $<str>$ = strdup("");
-            $<str>$ = app(5, printTab($<str>$, depth - 1), "elif ", $<str>3, ":\n", $<str>5);
+            $<str>$ = app(5, printTab("", depth - 1), "elif ", $<str>3, ":\n", $<str>5);
         }
     ;
 
@@ -381,12 +382,12 @@ else_part
     :   _ELSE body
         {
             $<str>$ = strdup("");
-            $<str>$ = app(3, printTab($<str>$, depth - 1), "else: \n", $<str>2);
+            $<str>$ = app(3, printTab("", depth - 1), "else: \n", $<str>2);
         }
     |   _ELSE statement
         {
             $<str>$ = strdup("");
-            $<str>$ = app(3, printTab($<str>$, depth - 1), "else: \n", $<str>2);
+            $<str>$ = app(3, printTab("", depth - 1), "else: \n", $<str>2);
         }
     ;
 
@@ -468,7 +469,7 @@ while_statement
     |   _WHILE _LPAREN rel_exp _RPAREN statement
         {
             $<str>$ = strdup("while ");
-            $<str>$ = app(4, $<str>$, $<str>3, ":\n", $<str>5);
+            $<str>$ = app(5, $<str>$, $<str>3, ":\n", printTab("", depth + 1), $<str>5);
         }
     |   _DO body _WHILE _LPAREN rel_exp _RPAREN _SEMICOLON
         {
@@ -481,71 +482,71 @@ for_statement
     :   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN body
         {
             $<str>$ = strdup($<str>3);
-            $<str>$ = app(4, $<str>$, "\nwhile ", $<str>4, ":\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(5, $<str>$, printTab("", depth + 1), "\nwhile ", $<str>4, ":\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth - 1));
             $<str>$ = app(3, $<str>$, $<str>8, $<str>6);
         }
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN statement
         {
             $<str>$ = strdup($<str>3);
-            $<str>$ = app(4, $<str>$, "\nwhile ", $<str>4, ":\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(5, $<str>$, printTab("", depth + 1), "\nwhile ", $<str>4, ":\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth - 1));
             $<str>$ = app(3, $<str>$, $<str>8, $<str>6);
         }
     |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN body
         {
             $<str>$ = strdup("");
-            $<str>$ = app(4, $<str>$, "\nwhile ", $<str>4, ":\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(5, $<str>$, printTab("", depth + 1), "\nwhile ", $<str>4, ":\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth - 1));
             $<str>$ = app(3, $<str>$, $<str>8, $<str>6);
         }
     |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN statement
         {
             $<str>$ = strdup("");
-            $<str>$ = app(4, $<str>$, "\nwhile ", $<str>4, ":\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(5, $<str>$, printTab("", depth + 1), "\nwhile ", $<str>4, ":\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth - 1));
             $<str>$ = app(3, $<str>$, $<str>8, $<str>6);
         }
     |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN body
         {
             $<str>$ = strdup($<str>3);
-            $<str>$ = app(2, $<str>$, "\nwhile True:\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(3, $<str>$, printTab("", depth + 1),"\nwhile True:\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth - 1));
             $<str>$ = app(3, $<str>$, $<str>7, $<str>5);
         }
     |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN statement
         {
             $<str>$ = strdup($<str>3);
-            $<str>$ = app(2, $<str>$, "\nwhile True:\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(3, $<str>$, printTab("", depth + 1),"\nwhile True:\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth-1));
             $<str>$ = app(3, $<str>$, $<str>7, $<str>5);
         }
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN body
         {
             $<str>$ = strdup($<str>3);
-            $<str>$ = app(4, $<str>$, "\nwhile ", $<str>4, ":\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(5, $<str>$, printTab("", depth + 1), "\nwhile ", $<str>4, ":\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth - 1));
             $<str>$ = app(2, $<str>$, $<str>7);
         }
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN statement
         {
             $<str>$ = strdup($<str>3);
-            $<str>$ = app(4, $<str>$, "\nwhile ", $<str>4, ":\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(5, $<str>$, printTab("", depth + 1), "\nwhile ", $<str>4, ":\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth - 1));
             $<str>$ = app(2, $<str>$, $<str>7);
         }
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN body
         {
             $<str>$ = strdup("");
-            $<str>$ = app(2, $<str>$, "\nwhile True:\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(3, $<str>$,printTab("", depth), "\nwhile True:\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth-1));
             $<str>$ = app(2, $<str>$, $<str>6);
         }
     |   _FOR _LPAREN _SEMICOLON _SEMICOLON _RPAREN statement
         {
             $<str>$ = strdup("");
-            $<str>$ = app(2, $<str>$, "\nwhile True:\n");
-            $<str>$ = app(2, $<str>$, printTab("", depth));
+            $<str>$ = app(3, $<str>$,printTab("", depth), "\nwhile True:\n");
+            $<str>$ = app(2, $<str>$, printTab("", depth-1));
             $<str>$ = app(2, $<str>$, $<str>6);
         }
     ;

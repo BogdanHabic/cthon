@@ -46,8 +46,8 @@ lf                          \r?\n
 "("                         {   yylval.str = strdup(yytext); return _LPAREN;     }
 ")"                         {   yylval.str = strdup(yytext); return _RPAREN;     }
 ","                         {   yylval.str = strdup(yytext); return _COMMA;      }
-"{"                         {   yylval.str = strdup(yytext); return _LBRACKET;   }
-"}"                         {   yylval.str = strdup(yytext); return _RBRACKET;   }
+"{"                         {   depth++; yylval.str = strdup(yytext); return _LBRACKET;   }
+"}"                         {   depth--;yylval.str = strdup(yytext); return _RBRACKET;   }
 "="                         {   yylval.str = strdup(yytext); return _ASSIGN;     }
 ";"                         {   yylval.str = strdup(yytext); return _SEMICOLON;  }
 "+"                         {   yylval.str = strdup(yytext); return _PLUS;       }
