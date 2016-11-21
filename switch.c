@@ -1,8 +1,8 @@
 int main() {
     switch(a) {
         case 5: 
+            a = 5;
             return "asd";
-            break;
         case 5: 
             return 5 * 5;
         default:

@@ -4,7 +4,7 @@ YACC_SRC = cthon.y
 .PHONY: clean
 
 a.out: lex.yy.c y.tab.c
-	gcc -o $@ $+ 
+	gcc -g -o $@ $+ 
 
 lex.yy.c: $(LEX_SRC) y.tab.c
 	lex -I $<

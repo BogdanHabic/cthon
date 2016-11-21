@@ -1,5 +1,5 @@
 %{
-#include <ctype.h>	
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -11,7 +11,7 @@ FILE *python;
 extern int depth;
 int current_switch = 0;
 
-void printTab(char* str, int d);
+char *printTab(char* str, int d);
 char *str_replace ( const char *string, const char *substr, const char *replacement );
 char *app_im(char* a, char*b);
 char *app(int count,...);
@@ -77,8 +77,7 @@ program
         }
     |   function_list
         {
-            puts($<str>1); 
-            fputs($<str>1, python); 
+            fputs($<str>1, python);
         }
     |   variable_list
         {
@@ -88,20 +87,19 @@ program
 
 variable_list
     :   /* empty */ {$<str>$ = strdup("");}
-    |   variable_list variable _SEMICOLON        
+    |   variable_list variable _SEMICOLON
         {
             $<str>$ = strdup("");
         }
-    |   variable_list variable _ASSIGN exp _SEMICOLON        
-        {   
+    |   variable_list variable _ASSIGN exp _SEMICOLON
+        {
             $<str>$ = strdup($<str>1);
             int i;
-            for (i = 0; i < depth; i++)
-                strcat($<str>$, "\t");
-            strcat($<str>$, $<str>2);
-            strcat($<str>$, "=");
-            strcat($<str>$, $<str>4);
-            strcat($<str>$, "\n");
+            for (i = 0; i < depth; i++) {
+                $<str>$ = app(2, $<str>$, "\t");
+            }
+
+            $<str>$ = app(5, $<str>$, $<str>2, "=", $<str>4, "\n");
         }
     ;
 
@@ -126,12 +124,11 @@ type
 
 function_list
     :   function
-        {	
+        {
         }
     |   function_list function
         {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, $<str>2);
+            $<str>$ = app(2, $<str>1, $<str>2);
         }
     ;
 
@@ -139,14 +136,12 @@ function
     :   type _ID _LPAREN parameters _RPAREN body
         {
             $<str>$ = strdup("def ");
-            if (strcmp($<str>2, "main") == 0)
-                strcat($<str>$, "__main__");
-            else strcat($<str>$, $<str>2);
-            strcat($<str>$, "(");
-            strcat($<str>$, $<str>4);
-            strcat($<str>$, ")\n");
-            strcat($<str>$, $<str>6);
-
+            if (strcmp($<str>2, "main") == 0) {
+                $<str>$ = app(2, $<str>$, "__main__");
+            } else {
+                $<str>$ = app(2, $<str>$, $<str>$);
+            }
+            $<str>$ = app(5, $<str>$, "(", $<str>4, ")\n", $<str>6);
         }
     ;
 
@@ -163,43 +158,37 @@ parameter_list
     |   parameter_list _COMMA variable
         {
             $<str>$ = strdup($<str>1);
-            strcat($<str>$, ",");
-            strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>$, ",", $<str>3);
         }
     |   parameter_list variable
         {
             extern int yylineno;
             printf("Missing comma in argument list at: %d", yylineno);
 
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, ",");
-            strcat($<str>$, $<str>2);
+            $<str>$ = app(3, $<str>1, ",", $<str>2);
         }
     ;
 
 body
     :   _LBRACKET variable_list statement_list _RBRACKET
         {
-            $<str>$ = strdup("");
-            strcat($<str>$, $<str>2);
-            strcat($<str>$, $<str>3);
+            //$<str>$ = strdup("");
+            $<str>$ = app(2, $<str>2, $<str>3);
         }
     |   _LBRACKET statement_list _RBRACKET
         {
-            $<str>$ = strdup("");
-            strcat($<str>$, $<str>2);
-
+            //$<str>$ = strdup("");
+            //$<str>$ = app(2, $<str>$, $<str>2);
+            $<str>$ = strdup($<str>2);
         }
     ;
 
 statement_list
     :   /* empty */ {$<str>$ = strdup("");}
     |   statement_list statement
-        {   
+        {
             $<str>$ = strdup($<str>1);
-            printTab($<str>$, depth - 1);
-            strcat($<str>$, $<str>2);
-            strcat($<str>$, "\n");
+            app(4, printTab($<str>$, depth - 1), $<str>2, "\n");
         }
     ;
 
@@ -218,24 +207,15 @@ statement
 assignment_statement
     :   _ID _ASSIGN exp
         {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "=");
-            strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>1, "=", $<str>3);
         }
     |   _ID _ASSIGN exp _SEMICOLON
         {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "=");
-            strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>1, "=", $<str>3);
         }
     |   _ID _LSBRACKET exp _RSBRACKET _ASSIGN exp _SEMICOLON
         {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "[");
-            strcat($<str>$, strdup($<str>2));
-            strcat($<str>$, "]");
-            strcat($<str>$, "=");
-            strcat($<str>$, $<str>6);
+            $<str>$ = app(5, $<str>1, "[", $<str>2, "]=", $<str>6);
         }
     ;
 
@@ -249,27 +229,19 @@ arithmetic_exp
     :   number
     |   arithmetic_exp _PLUS number
         {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "+");
-            strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>1, "+", $<str>3);
         }
     |   arithmetic_exp _MINUS number
          {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "-");
-            strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>1, "-", $<str>3);
         }
     |   arithmetic_exp _TIMES number
          {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "*");
-            strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>1, "*", $<str>3);
         }
     |   arithmetic_exp _DIV number
          {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "/");
-            strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>1, "/", $<str>3);
         }
     ;
 
@@ -282,11 +254,9 @@ exp
     |   inc_dec { $<str>$ = strdup($<str>1); }
     |   array_exp { $<str>$ = strdup($<str>1); }
     |   array_ele_exp { $<str>$ = strdup($<str>1); }
-    |   _LPAREN exp _RPAREN 
+    |   _LPAREN exp _RPAREN
         {
-            $<str>$ = strdup("("); 
-            strcat($<str>$, $<str>2);
-            strcat($<str>$, ")");
+            $<str>$ = app(3, "(", $<str>2, ")");
         }
     ;
 
@@ -303,9 +273,7 @@ function_call
 array_exp
     :   _LBRACKET exp_list _RBRACKET
         {
-            $<str>$ = strdup("["); 
-            strcat($<str>$, $<str>1);
-            strcat($<str>$, "]");
+            $<str>$ = app(3, "[", $<str>1, "]");
         }
     ;
 
@@ -334,22 +302,13 @@ if_statement
 if_part
     :   _IF _LPAREN rel_exp _RPAREN body
         {
-
             $<str>$ = strdup("");
-            //printTab($<str>$, depth - 1);            
-            strcat($<str>$, "if ");
-            strcat($<str>$, $<str>3);
-            strcat($<str>$, ":\n");
-            strcat($<str>$, $<str>5);
+            $<str>$ = app(5, printTab($<str>$, depth - 1), "if ", $<str>3, ":\n", $<str>5);
         }
     |   _IF _LPAREN rel_exp _RPAREN statement
         {
             $<str>$ = strdup("");
-            //printTab($<str>$, depth - 1);
-            strcat($<str>$, "if ");
-            strcat($<str>$, $<str>3);
-            strcat($<str>$, ":\n");
-            strcat($<str>$, $<str>5);
+            $<str>$ = app(5, printTab($<str>$, depth - 1), "if ", $<str>3, ":\n", $<str>5);
         }
     ;
 
@@ -357,20 +316,12 @@ elif_part
     :   _ELIF _LPAREN rel_exp _RPAREN body
         {
             $<str>$ = strdup("");
-            //printTab($<str>$, depth - 1);
-            strcat($<str>$, "elif ");
-            strcat($<str>$, $<str>3);
-            strcat($<str>$, ":\n");
-            strcat($<str>$, $<str>5);
+            $<str>$ = app(5, printTab($<str>$, depth - 1), "elif ", $<str>3, ":\n", $<str>5);
         }
     |   _ELIF _LPAREN rel_exp _RPAREN statement
         {
             $<str>$ = strdup("");
-            //printTab($<str>$, depth - 1);
-            strcat($<str>$, "elif ");
-            strcat($<str>$, $<str>3);
-            strcat($<str>$, ":\n");
-            strcat($<str>$, $<str>5);
+            $<str>$ = app(5, printTab($<str>$, depth - 1), "elif ", $<str>3, ":\n", $<str>5);
         }
     ;
 
@@ -378,16 +329,12 @@ else_part
     :   _ELSE body
         {
             $<str>$ = strdup("");
-            //printTab($<str>$, depth - 1);
-            strcat($<str>$, "else: \n ");
-            strcat($<str>$, $<str>2);
+            $<str>$ = app(5, printTab($<str>$, depth - 1), "else: \n", $<str>2);
         }
     |   _ELSE statement
         {
             $<str>$ = strdup("");
-            //printTab($<str>$, depth - 1);
-            strcat($<str>$, "else: \n ");
-            strcat($<str>$, $<str>2);
+            $<str>$ = app(5, printTab($<str>$, depth - 1), "else: \n", $<str>2);
         }
     ;
 
@@ -412,8 +359,7 @@ case_list
         }
     |   case_list case_part
         {
-          $<str>$ = strdup($<str>1);
-          strcat($<str>$, $<str>2);
+          $<str>$ = app(2, $<str>1, $<str>2);
         }
     |   case_list case_part default_part
         {
@@ -427,41 +373,21 @@ case_list
 case_part
     :   _CASE exp _COLON statement_list
         {
-         if(current_switch == 0) {
-             $<str>$ = strdup("if ");
-           strcat($<str>$, "###");
-           strcat($<str>$, "==");
-           strcat($<str>$, $<str>1);
-           strcat($<str>$, ":\n");
-           strcat($<str>$, $<str>4);
-           current_switch = 1;
-         } else {
-              $<str>$ = strdup("elif ");
-              strcat($<str>$, "###");
-              strcat($<str>$, "==");
-              strcat($<str>$, $<str>1);
-              strcat($<str>$, ":\n");
-              strcat($<str>$, $<str>4);
-          }
+            if(current_switch == 0) {
+                $<str>$ = app(4, "if ###==", $<str>1, ":\n", $<str>4);
+                current_switch = 1;
+            } else {
+                $<str>$ = app(4, "elif ###==", $<str>1, ":\n", $<str>4);
+            }
         }
     |   _CASE exp _COLON statement_list _BREAK _SEMICOLON
         {
-          if(current_switch == 0) {
-              $<str>$ = strdup("if ");
-              strcat($<str>$, "###");
-              strcat($<str>$, "==");
-              strcat($<str>$, $<str>1);
-              strcat($<str>$, ":\n");
-              strcat($<str>$, $<str>4);
-              current_switch = 1;
-          } else {
-              $<str>$ = strdup("elif ");
-              strcat($<str>$, "###");
-              strcat($<str>$, "==");
-              strcat($<str>$, $<str>1);
-              strcat($<str>$, ":\n");
-              strcat($<str>$, $<str>4);
-          }
+            if(current_switch == 0) {
+                $<str>$ = app(4, "if ###==", $<str>1, ":\n", $<str>4);
+                current_switch = 1;
+            } else {
+                $<str>$ = app(4, "elif ###==", $<str>1, ":\n", $<str>4);
+            }
         }
     ;
 
@@ -469,21 +395,17 @@ default_part
     :   _DEFAULT _COLON statement_list
         {
           if(current_switch == 0) {
-              $<str>$ = strdup("if True:\n");
-              strcat($<str>$, $<str>3);
+              $<str>$ = app(2, "if True:\n", $<str>3);
           } else {
-              $<str>$ = strdup("else:\n");
-              strcat($<str>$, $<str>3);
+              $<str>$ = app(2, "else:\n", $<str>3);
           }
         }
     |   _DEFAULT _COLON statement_list _BREAK _SEMICOLON
         {
           if(current_switch == 0) {
-              $<str>$ = strdup("if True:\n");
-              strcat($<str>$, $<str>3);
+              $<str>$ = app(2, "if True:\n", $<str>3);
           } else {
-              $<str>$ = strdup("else:\n");
-              strcat($<str>$, $<str>3);
+              $<str>$ = app(2, "else:\n", $<str>3);
           }
         }
     ;
@@ -497,39 +419,29 @@ while_statement
 for_statement
     :   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN body
         {
-            puts("!");
             $<str>$ = strdup($<str>3);
-            strcat($<str>$, "\nwhile ");
-            strcat($<str>$, $<str>4);
-            strcat($<str>$, ":\n");
-            strcat($<str>$, $<str>8);
-            strcat($<str>$, "\n");
-            printTab($<str>$, depth);
-            strcat($<str>$, "@");
+            $<str>$ = app(5, $<str>$, "\nwhile ", $<str>4, ":\n", $<str>6);
+            $<str>$ = app(2, $<str>$, printTab($<str>$, depth));
+            $<str>$ = app(2, $<str>$, $<str>8);
         }
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON exp _RPAREN statement
     |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN body
     |   _FOR _LPAREN _SEMICOLON exp _SEMICOLON exp _RPAREN statement
     |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN body
         {
-            puts("!");
-            $<str>$ = strdup($<str>3);
-            strcat($<str>$, "\nwhile ");
-            strcat($<str>$, $<str>5);
-            strcat($<str>$, ":\n");
-            strcat($<str>$, $<str>7);
-            strcat($<str>$, "\n");
-            printTab($<str>$, depth);
-            strcat($<str>$, "@");
+          //$<str>$ = strdup($<str>3);
+          //$<str>$ = app(5, $<str>$, "\nwhile ", $<str>5, ":\n", $<str>7);
+          //$<str>$ = app(2, $<str>$, printTab($<str>$, depth));
+          //$<str>$ = app(2, $<str>$, $<str>7);
 
         }
     |   _FOR _LPAREN assignment_statement _SEMICOLON exp _RPAREN statement
         {
-            $<str>$ = strdup($<str>3);
-            strcat($<str>$, "\nwhile ");
-            strcat($<str>$, $<str>5);
-            strcat($<str>$, ":\n");
-            strcat($<str>$, $<str>7);
+          //$<str>$ = strdup($<str>3);
+          //strcat($<str>$, "\nwhile ");
+          //strcat($<str>$, $<str>5);
+          //strcat($<str>$, ":\n");
+          //strcat($<str>$, $<str>7);
         }
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN body
     |   _FOR _LPAREN assignment_statement exp _SEMICOLON _RPAREN statement
@@ -540,19 +452,11 @@ for_statement
 printf_statement
     :   _PRINTF _LPAREN _STRING _RPAREN _SEMICOLON
         {
-            $<str>$ = strdup("\"");
-            strcat($<str>$, $<str>3);
-            strcat($<str>$, "\"");
+            $<str>$ = app(3, "\"", $<str>3, "\"");
         }
     |   _PRINTF _LPAREN _STRING _COMMA arguments _RPAREN _SEMICOLON
         {
-            $<str>$ = strdup("\"");
-            strcat($<str>$, $<str>3);
-            strcat($<str>$, "\"");
-            strcat($<str>$, "%");
-            strcat($<str>$, "(");
-            strcat($<str>$, $<str>5);
-            strcat($<str>$, ")");
+            $<str>$ = app(6, "\"", $<str>3, "\"", "% (", $<str>5, ")");
         }
     ;
 
@@ -564,46 +468,38 @@ scanf_statement
 inc_dec
     :   _ID _INC
         {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "++");
+            $<str>$ = app(2, $<str>1, "+=1");
         }
     |   _ID _DEC
         {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, "--");
+            $<str>$ = app(2, $<str>1, "-=1");
         }
     |   _INC _ID
         {
-            $<str>$ = strdup("++");
-            strcat($<str>$, $<str>2);
+            $<str>$ = app(2, $<str>1, "+=1");
         }
     |   _DEC _ID
         {
-            $<str>$ = strdup("--");
-            strcat($<str>$, $<str>2);
+            $<str>$ = app(2, $<str>1, "-=1");
         }
     ;
 
 rel_exp
-    :   exp _RELOP exp  
+    :   exp _RELOP exp
         {
-            $<str>$ = strdup($<str>1);
-            strcat($<str>$, $<str>2);
-            strcat($<str>$, $<str>3);
+            $<str>$ = app(3, $<str>1, $<str>2, $<str>3);
         }
     |   _NEGATE exp
         {
-            $<str>$ = strdup("!");
-            strcat($<str>$, $<str>2);
+            $<str>$ = app(2, "!", $<str>2);
         }
-    |   exp 
+    |   exp
     ;
 
 return_statement
     :   _RETURN exp _SEMICOLON
         {
-            $<str>$ = strdup("return ");
-            strcat($<str>$, $<str>2);
+            $<str>$ = app(2, "return ", $<str>2);
         }
     ;
 
@@ -626,16 +522,20 @@ int yyerror(char *s) {
     return 0;
 }
 
-void printTab(char* str, int d)
+char *printTab(char* str, int d)
 {
     int i;
-    for (i = 0; i < d; i++)
-        strcat(str, "\t");
+    char *result = str;
+    for (i = 0; i < d; i++) {
+        result = app(2, result, "\t");
+    }
+
+    return result;
 }
 
 char* app_im(char* a, char*b){
     char* result;
-    result = malloc(strlen(a)+strlen(b)+1);
+    result = malloc(strlen(a) + strlen(b) + 1);
     result = strcat(result, a);
     result = strcat(result, b);
     return result;
@@ -649,8 +549,9 @@ char *app(int count,...)
 
   va_start (ap, count);         /* Initialize the argument list. */
 
-  for (i = 0; i < count; i++)
+  for (i = 0; i < count; i++) {
     result = app_im(result, va_arg (ap, char*));    /* Get the next argument value. */
+  }
 
   va_end (ap);                  /* Clean up. */
 
@@ -681,4 +582,3 @@ char *str_replace ( const char *string, const char *substr, const char *replacem
   }
   return newstr;
 }
-
