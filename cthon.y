@@ -188,7 +188,7 @@ statement_list
     |   statement_list statement
         {
             $<str>$ = strdup($<str>1);
-            app(4, printTab($<str>$, depth - 1), $<str>2, "\n");
+            app(3, printTab($<str>$, depth - 1), $<str>2, "\n");
         }
     ;
 
@@ -535,6 +535,7 @@ char *printTab(char* str, int d)
 
 char* app_im(char* a, char*b){
     char* result;
+
     result = malloc(strlen(a) + strlen(b) + 1);
     result = strcat(result, a);
     result = strcat(result, b);
