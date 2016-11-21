@@ -8,7 +8,7 @@
 letter                      [_a-zA-Z]
 char                        [\x00-\x21\x23-\x7F]
 digit                       [0-9]
-type                        int|double|float
+type                        int|double|float|void
 char_type                   char
 lf                          \r?\n
 

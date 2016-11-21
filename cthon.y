@@ -89,7 +89,7 @@ variable_list
     :   /* empty */ {$<str>$ = strdup("");}
     |   variable_list variable _SEMICOLON
         {
-            $<str>$ = strdup("");
+            $<str>$ = strdup($<str>1);
         }
     |   variable_list variable _ASSIGN exp _SEMICOLON
         {
@@ -125,6 +125,7 @@ type
 function_list
     :   function
         {
+            $<str>$ = strdup($<str>1);
         }
     |   function_list function
         {
@@ -139,7 +140,7 @@ function
             if (strcmp($<str>2, "main") == 0) {
                 $<str>$ = app(2, $<str>$, "__main__");
             } else {
-                $<str>$ = app(2, $<str>$, $<str>$);
+                $<str>$ = app(2, $<str>$, $<str>2);
             }
             $<str>$ = app(5, $<str>$, "(", $<str>4, "):\n", $<str>6);
         }
@@ -147,7 +148,7 @@ function
 
 parameters
     :   /* empty */ {$<str>$ = strdup("");}
-    |   parameter_list
+    |   parameter_list {$<str>$ = strdup($<str>1);}
     ;
 
 parameter_list
@@ -239,7 +240,7 @@ assignment_statement
         }
     |   _ID _LSBRACKET exp _RSBRACKET _ASSIGN exp _SEMICOLON
         {
-            $<str>$ = app(5, $<str>1, "[", $<str>2, "]=", $<str>6);
+            $<str>$ = app(5, $<str>1, "[", $<str>3, "]=", $<str>6);
         }
     ;
 
@@ -250,7 +251,7 @@ number
     ;
 
 arithmetic_exp
-    :   number
+    :   number {$<str>$ = strdup($<str>1);}
     |   arithmetic_exp _PLUS number
         {
             $<str>$ = app(3, $<str>1, "+", $<str>3);
@@ -292,28 +293,46 @@ constant
 
 function_call
     :   _ID _LPAREN arguments _RPAREN
+        {
+            $<str>$ = app(4, $<str>1, "(", $<str>3, ")");
+        }
     ;
 
 array_exp
     :   _LBRACKET exp_list _RBRACKET
         {
-            $<str>$ = app(3, "[", $<str>1, "]");
+            $<str>$ = app(3, "[", $<str>2, "]");
         }
     ;
 
 array_ele_exp
     :   _ID _LSBRACKET exp _RSBRACKET
+        {
+            $<str>$ = app(4, $<str>1, "[", $<str>3, "]");
+        }
     ;
 
 exp_list
     : /* empty */
     |   exp
+        {
+            $<str>$ = strdup($<str>1);
+        }
     |   exp_list _COMMA exp
+        {
+            $<str>$ = app(3, $<str>1, ",", $<str>3);
+        }
     ;
 
 arguments
     :   exp
+        {
+            $<str>$ = strdup($<str>1);
+        }
     |   arguments _COMMA exp
+        {
+            $<str>$ = app(3, $<str>1, ",", $<str>3);
+        }
     ;
 
 if_statement
@@ -442,8 +461,20 @@ default_part
 
 while_statement
     :   _WHILE _LPAREN rel_exp _RPAREN body
+        {
+            $<str>$ = strdup("while ");
+            $<str>$ = app(4, $<str>$, $<str>3, ":\n", $<str>5);
+        }
     |   _WHILE _LPAREN rel_exp _RPAREN statement
+        {
+            $<str>$ = strdup("while ");
+            $<str>$ = app(4, $<str>$, $<str>3, ":\n", $<str>5);
+        }
     |   _DO body _WHILE _LPAREN rel_exp _RPAREN _SEMICOLON
+        {
+            $<str>$ = strdup("while True:\n");
+            $<str>$ = app(5, $<str>$, $<str>2, "\nif ", $<str>5, ":\nbreak");
+        }
     ;
 
 for_statement
@@ -522,7 +553,7 @@ for_statement
 printf_statement
     :   _PRINTF _LPAREN _STRING _RPAREN _SEMICOLON
         {
-            $<str>$ = app(3, "\"", $<str>3, "\"");
+            $<str>$ = strdup($<str>3);
         }
     |   _PRINTF _LPAREN _STRING _COMMA arguments _RPAREN _SEMICOLON
         {
@@ -564,6 +595,9 @@ rel_exp
             $<str>$ = app(2, "!", $<str>2);
         }
     |   exp
+        {
+            $<str>$ = strdup($<str>1);
+        }
     ;
 
 return_statement

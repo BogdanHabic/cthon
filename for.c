@@ -1,3 +1,9 @@
+void testiramo() {
+    int a = 5;
+
+    return 5;
+}
+
 int main() {
     for ( i = 0; i < 5; i++ ) {
         printf("Ovo je taman test: %d", i);
